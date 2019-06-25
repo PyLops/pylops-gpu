@@ -1,0 +1,15 @@
+numpy>=1.15.0
+scipy
+pytorch
+pylops[advanced]
+matplotlib
+ipython
+pytest
+pytest-runner
+setuptools_scm
+Sphinx
+sphinx-rtd-theme
+sphinx-gallery
+numpydoc
+nbsphinx
+image

@@ -1,0 +1,23 @@
+name: pylops-gpu
+channels:
+  - defaults
+  - conda-forge
+  - pytorch
+dependencies:
+  - python>=3.6.4
+  - numpy>=1.15.0
+  - pytorch
+  - torchvision
+  - pylops
+  - pytest
+  - Sphinx
+  - numpydoc
+  - pip:
+    - spgl1
+    - pytorch-complex-tensor
+    - pytest-runner
+    - setuptools_scm
+    - sphinx-rtd-theme
+    - sphinx-gallery
+    - nbsphinx
+    - image
