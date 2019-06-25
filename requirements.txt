@@ -1,4 +1,4 @@
 numpy>=1.15.0
 scipy
-pytorch
+torch
 pylops
