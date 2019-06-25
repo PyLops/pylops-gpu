@@ -1,6 +1,7 @@
 numpy>=1.15.0
 scipy
 torch
+pytorch_complex_tensor
 pylops[advanced]
 matplotlib
 ipython
