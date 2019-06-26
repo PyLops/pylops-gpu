@@ -1,7 +1,8 @@
 import torch
 import numpy as np
 
-def dottest(Op, nr, nc, tol=1e-6, complexflag=0, raiseerror=True, verb=False):
+def dottest(Op, nr, nc, tol=1e-6, complexflag=0, device='cpu',
+            raiseerror=True, verb=False):
     r"""Dot test.
 
     Generate random vectors :math:`\mathbf{u}` and :math:`\mathbf{v}`
@@ -21,6 +22,8 @@ def dottest(Op, nr, nc, tol=1e-6, complexflag=0, raiseerror=True, verb=False):
     complexflag : :obj:`bool`, optional
         generate random vectors with real (0) or complex numbers
         (1: only model, 2: only data, 3:both)
+    device : :obj:`str`, optional
+        Device to be used
     raiseerror : :obj:`bool`, optional
         Raise error or simply return ``False`` when dottest fails
     verb : :obj:`bool`, optional
@@ -54,8 +57,7 @@ def dottest(Op, nr, nc, tol=1e-6, complexflag=0, raiseerror=True, verb=False):
         v = torch.rand(nr)
     else:
         v = np.random.randn(nr)+1j*np.random.randn(nr)
-
-    print(u, v)
+    u, v = u.to(device), v.to(device)
 
     y = Op.matvec(u)   # Op * u
     x = Op.rmatvec(v)  # Op'* v
