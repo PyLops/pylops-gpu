@@ -24,7 +24,7 @@ applied and inverted using PyLops:
    import numpy as np
    from pylops import Diagonal
 
-   n = 10
+   n = int(1e6)
    x = np.ones(n)
    d = np.arange(n) + 1.
 
@@ -44,7 +44,7 @@ and similarly using PyLops-GPU:
 
    dev = device() # will return 'gpu' if GPU is available
 
-   n = 100000
+   n = int(1e6)
    x = torch.ones(n, dtype=torch.float64).to(dev)
    d = (torch.arange(0, n, dtype=torch.float64) + 1.).to(dev)
 
@@ -53,8 +53,8 @@ and similarly using PyLops-GPU:
    # y = Dx
    y = Dop*x
 
-Running these two snippets of code in Google Colab with GPU enabled gives a 100+
-speed up for the forward pass
+Running these two snippets of code in Google Colab with GPU enabled gives a 50+
+speed up for the forward pass.
 
 
 .. toctree::

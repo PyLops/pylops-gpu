@@ -21,7 +21,7 @@ applied and inverted using PyLops:
 import numpy as np
 from pylops import Diagonal
 
-n = 100000
+n = int(1e6)
 x = np.ones(n)
 d = np.arange(n) + 1.
 
@@ -40,7 +40,7 @@ from pylops_gpu import Diagonal
 
 dev = device()
 
-n = 100000
+n = int(1e6)
 x = torch.ones(n, dtype=torch.float64).to(dev)
 d = (torch.arange(0, n, dtype=torch.float64) + 1.).to(dev)
 
@@ -50,7 +50,7 @@ Dop = Diagonal(d, device=dev)
 y = Dop*x
 ```
 
-Running these two snippets of code in Google Colab with GPU enabled gives a 100+
+Running these two snippets of code in Google Colab with GPU enabled gives a 50+
 speed up for the forward pass.
 
 ## Project structure
