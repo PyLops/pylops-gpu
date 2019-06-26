@@ -32,8 +32,6 @@ applied and inverted using PyLops:
 
    # y = Dx
    y = Dop*x
-   # xinv = D^-1 y
-   xinv = Dop / y
 
 and similarly using PyLops-GPU:
 
@@ -54,8 +52,6 @@ and similarly using PyLops-GPU:
 
    # y = Dx
    y = Dop*x
-   # xinv = D^-1 y
-   xinv = Dop / y
 
 Running these two snippets of code in Google Colab with GPU enabled gives a 100+
 speed up for the forward pass

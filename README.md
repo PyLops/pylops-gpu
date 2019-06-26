@@ -29,8 +29,6 @@ Dop = Diagonal(d)
 
 # y = Dx
 y = Dop*x
-# xinv = D^-1 y
-xinv = Dop / y
 ```
 
 and similarly using PyLops-gpu:
@@ -50,6 +48,57 @@ Dop = Diagonal(d, device=dev)
 
 # y = Dx
 y = Dop*x
-# xinv = D^-1 y
-xinv = Dop / y
 ```
+
+Running these two snippets of code in Google Colab with GPU enabled gives a 100+
+speed up for the forward pass.
+
+## Project structure
+This repository is organized as follows:
+* **pylops_gpu**: python library containing various GPU-powered linear operators and auxiliary routines
+* **pytests**:    set of pytests
+* **testdata**:   sample datasets used in pytests and documentation
+* **docs**:       sphinx documentation
+* **examples**:   set of python script examples for each linear operator to be embedded in documentation using sphinx-gallery
+* **tutorials**:  set of python script tutorials to be embedded in documentation using sphinx-gallery
+
+## Getting started
+
+You need **Python 3.6.4 or greater**.
+
+#### From PyPi
+Coming soon...
+
+## Contributing
+*Feel like contributing to the project? Adding new operators or tutorial?*
+
+Follow the instructions in [PyLops official documentation](https://pylops.readthedocs.io/).
+
+## Documentation
+The official documentation of PyLops-GPU is coming soon...
+
+Visit this page to get started learning about different operators and their applications as well as how to
+create new operators yourself and make it to the ``Contributors`` list.
+
+Moreover, if you have installed PyLops using the *developer environment* you can also build the documentation locally by
+typing the following command:
+```
+make doc
+```
+Once the documentation is created, you can make any change to the source code and rebuild the documentation by
+simply typing
+```
+make docupdate
+```
+Note that if a new example or tutorial is created (and if any change is made to a previously available example or tutorial)
+you are required to rebuild the entire documentation before your changes will be visible.
+
+
+## History
+PyLops-GPU was initially written and it is currently maintained by [Equinor](https://www.equinor.com).
+It is a flexible and scalable python library for large-scale optimization with linear
+operators that can be tailored to our needs, and as contribution to the free software community.
+
+
+## Contributors
+* Matteo Ravasi, mrava87
