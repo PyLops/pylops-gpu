@@ -39,19 +39,21 @@ class LinearOperator(pLinearOperator):
 
     """
     def __init__(self, Op=None, explicit=False, device='cpu',
-                 togpu=(False, False), tocpu=(False, False), tonumpy=True):
+                 togpu=(False, False), tocpu=(False, False)):
         super().__init__(Op=Op, explicit=explicit)
         self.device = device
         self.togpu = togpu
         self.tocpu = tocpu
 
     def matvec(self, x):
+        print(x)
         # convert x to torch.Tensor
         if not isinstance(x, torch.Tensor):
             _tonumpy = True
             x = torch.from_numpy(x)
         else:
             _tonumpy = False
+        print(x)
         # matvec, possibly moving x to gpu and y back to cpu
         if self.device != 'cpu' and self.togpu[0]:
             x = x.to(self.device)
