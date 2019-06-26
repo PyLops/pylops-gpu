@@ -53,8 +53,6 @@ class LinearOperator(pLinearOperator):
         else:
             _tonumpy = False
         # matvec, possibly moving x to gpu and y back to cpu
-        if not isinstance(x, torch.Tensor):
-            x = torch.from_numpy(x)
         if self.device != 'cpu' and self.togpu[0]:
             x = x.to(self.device)
         if self.Op is None:
@@ -90,4 +88,4 @@ class LinearOperator(pLinearOperator):
         return y
 
     def __mul__(self, x):
-        return self._matvec(x)
+        return self.matvec(x)

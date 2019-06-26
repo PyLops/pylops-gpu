@@ -41,13 +41,12 @@ and similarly using PyLops-GPU:
 
    import numpy as np
    import torch
-   import pylops_gpu
+   from pylops_gpu.utils.backend import device
    from pylops_gpu import Diagonal
-   from scipy.sparse.linalg import lsqr
 
-   dev = device()
+   dev = device() # will return 'gpu' if GPU is available
 
-   n = 10
+   n = 100000
    x = torch.ones(n, dtype=torch.float64).to(dev)
    d = (torch.arange(0, n, dtype=torch.float64) + 1.).to(dev)
 
@@ -57,6 +56,9 @@ and similarly using PyLops-GPU:
    y = Dop*x
    # xinv = D^-1 y
    xinv = Dop / y
+
+Running these two snippets of code in Google Colab with GPU enabled gives a 100+
+speed up for the forward pass
 
 
 .. toctree::

@@ -20,7 +20,7 @@ applied and inverted using PyLops:
 import numpy as np
 from pylops import Diagonal
 
-n = 10
+n = 100000
 x = np.ones(n)
 d = np.arange(n) + 1.
 
@@ -36,17 +36,16 @@ and similarly using PyLops-gpu:
 ```python
 import numpy as np
 import torch
-import pylops_gpu
+from pylops_gpu.utils.backend import device
 from pylops_gpu import Diagonal
-from scipy.sparse.linalg import lsqr
 
 dev = device()
 
-n = 10
+n = 100000
 x = torch.ones(n, dtype=torch.float64).to(dev)
 d = (torch.arange(0, n, dtype=torch.float64) + 1.).to(dev)
 
-Dop = Diagonal(d, device=dev, tonumpy=False)
+Dop = Diagonal(d, device=dev)
 
 # y = Dx
 y = Dop*x

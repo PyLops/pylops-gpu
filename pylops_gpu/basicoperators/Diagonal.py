@@ -54,7 +54,7 @@ class Diagonal(LinearOperator):
                  togpu=(False, False), tocpu=(False, False),
                  dtype=torch.float64):
         if not isinstance(diag, (torch.Tensor, ComplexTensor)):
-            self.complex = True if np.iscomplexobj(self.diag) else False
+            self.complex = True if np.iscomplexobj(diag) else False
             self.diag = torch.from_numpy(diag.flatten())
         else:
             self.complex = True if isinstance(diag, ComplexTensor) else False
