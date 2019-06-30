@@ -2,14 +2,12 @@ import pytest
 
 import numpy as np
 import torch
-from pytorch_complex_tensor import ComplexTensor
 
 from numpy.testing import assert_array_almost_equal
-from scipy.sparse.linalg import lsqr
-
 from pylops_gpu.utils import dottest
 from pylops_gpu.utils.backend import device
 from pylops_gpu.basicoperators import Diagonal
+from pylops_gpu.optimization.leastsquares import cg
 
 
 par1 = {'ny': 21, 'nx': 11, 'nt': 20,
@@ -31,5 +29,6 @@ def test_Diagonal_1dsignal(par):
 
         x = torch.ones(ddim, dtype=par['dtype']).to(dev)
 
-        xlsqr = lsqr(Dop, Dop * x, damp=1e-20, iter_lim=300, show=0)[0]
-        assert_array_almost_equal(x, xlsqr, decimal=4)
+        xcg = cg(Dop, Dop * x, niter=20)[0]
+        print(xcg)
+        assert_array_almost_equal(x.numpy(), xcg.numpy(), decimal=4)

@@ -12,10 +12,12 @@ steps:
 - script: |
     python -m pip install --upgrade pip setuptools wheel django
     pip install -r requirements-dev.txt
+    pip install pytest-azurepipelines pytest-cov
     pip install .
-  displayName: 'Install prerequisites and library'
+  displayName: 'Install dependencies and library'
 
 - script: |
-    python setup.py test
+    python -m pytest pytests/
+    pytest pytests/ --cov pylops_gpu --cov-report html
   condition: succeededOrFailed()
   displayName: 'Run tests'

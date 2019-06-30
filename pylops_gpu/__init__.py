@@ -1,9 +1,9 @@
-from .LinearOperator import LinearOperator
-
+from .LinearOperator import LinearOperator, MatrixMult, aslinearoperator
 from .basicoperators import Diagonal
 
-from . import basicoperators
 from . import utils
+from . import basicoperators
+from . import optimization
 
 
 try:

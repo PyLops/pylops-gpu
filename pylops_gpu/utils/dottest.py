@@ -1,8 +1,11 @@
 import torch
 import numpy as np
 
-def dottest(Op, nr, nc, tol=1e-6, complexflag=0, device='cpu',
-            raiseerror=True, verb=False):
+from pylops_gpu.utils.complex import complextorch_fromnumpy
+
+
+def dottest(Op, nr, nc, tol=1e-6, dtype=torch.float32,
+            complexflag=0, device='cpu', raiseerror=True, verb=False):
     r"""Dot test.
 
     Generate random vectors :math:`\mathbf{u}` and :math:`\mathbf{v}`
@@ -19,6 +22,8 @@ def dottest(Op, nr, nc, tol=1e-6, complexflag=0, device='cpu',
         Number of columns of operator (i.e., elements in model)
     tol : :obj:`float`, optional
         Dottest tolerance
+    dtype : :obj:`torch.dtype`, optional
+        Type of elements in random vectors
     complexflag : :obj:`bool`, optional
         generate random vectors with real (0) or complex numbers
         (1: only model, 2: only data, 3:both)
@@ -48,15 +53,18 @@ def dottest(Op, nr, nc, tol=1e-6, complexflag=0, device='cpu',
         \mathbf{u}^H*(\mathbf{Op}^H*\mathbf{v})
 
     """
+    np_dtype = torch.ones(1, dtype=torch.float32).numpy().dtype
     if complexflag in (0, 2):
-        u = torch.rand(nc)
+        u = torch.rand(nc, dtype=dtype)
     else:
-        u = np.random.randn(nc)+1j*np.random.randn(nc)
+        u = complextorch_fromnumpy(np.random.randn(nc).astype(np_dtype) +
+                                   1j*np.random.randn(nc).astype(np_dtype))
 
     if complexflag in (0, 1):
-        v = torch.rand(nr)
+        v = torch.rand(nr, dtype=dtype)
     else:
-        v = np.random.randn(nr)+1j*np.random.randn(nr)
+        v = complextorch_fromnumpy(np.random.randn(nr).astype(np_dtype) + \
+                                   1j*np.random.randn(nr).astype(np_dtype))
     u, v = u.to(device), v.to(device)
 
     y = Op.matvec(u)   # Op * u
