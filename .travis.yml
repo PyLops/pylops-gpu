@@ -24,7 +24,7 @@ install:
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   - conda info -a
-  - conda env create -f environment-dev.yml
+  - conda env create -f environment-doc.yml
   - source activate pylops-gpu
   - export OMP_NUM_THREADS=4
   - python setup.py install
