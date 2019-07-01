@@ -1,5 +1,8 @@
 # PyLops-GPU
+[![Build Status](https://travis-ci.org/equinor/pylops-gpu.svg?branch=master)](https://travis-ci.org/equinor/pylops-gpu)
 [![AzureDevOps Status](https://dev.azure.com/MRAVA/PyLops/_apis/build/status/equinor.pylops-gpu?branchName=master)](https://dev.azure.com/MRAVA/PyLops/_build/latest?definitionId=2&branchName=master)
+[![Documentation Status](https://readthedocs.org/projects/pylops-gpu/badge/?version=latest)](https://pylops-gpu.readthedocs.io/en/latest/?badge=latest)
+[![OS-support](https://img.shields.io/badge/OS-linux,osx-850A8B.svg)](https://github.com/equinor/pylops-gpu)
 
 :vertical_traffic_light: :vertical_traffic_light: This library is under early development.
 Expect things to constantly change until version v1.0.0. :vertical_traffic_light: :vertical_traffic_light:
