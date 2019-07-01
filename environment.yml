@@ -7,7 +7,6 @@ dependencies:
   - python>=3.6.4
   - numpy>=1.15.0
   - pytorch
-  - torchvision
   - pylop
   - pip:
     - pytorch-complex-tensor
