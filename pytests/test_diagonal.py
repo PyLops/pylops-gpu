@@ -25,10 +25,26 @@ def test_Diagonal_1dsignal(par):
         d = (torch.arange(0, ddim, dtype=par['dtype']) + 1.).to(dev)
 
         Dop = Diagonal(d, dtype=par['dtype'])
-        dottest(Dop, ddim, ddim, verb=True)
+        assert dottest(Dop, ddim, ddim)
 
         x = torch.ones(ddim, dtype=par['dtype']).to(dev)
-
         xcg = cg(Dop, Dop * x, niter=20)[0]
-        print(xcg)
         assert_array_almost_equal(x.numpy(), xcg.numpy(), decimal=4)
+
+
+@pytest.mark.parametrize("par", [(par1)])
+def test_Diagonal_2dsignal(par):
+    """Dot-test and inversion for Diagonal operator for 2d signal
+    """
+    for idim, ddim in enumerate((par['nx'], par['nt'])):
+        d = (torch.arange(0, ddim, dtype=par['dtype']) + 1.).to(dev)
+
+        Dop = Diagonal(d, dims=(par['nx'], par['nt']),
+                       dir=idim, dtype=par['dtype'])
+        assert dottest(Dop, par['nx']*par['nt'], par['nx']*par['nt'])
+
+        x = torch.ones((par['nx'], par['nt']), dtype=par['dtype']).to(dev)
+        xcg = cg(Dop, Dop * x.view(-1), niter=20)[0]
+
+        assert_array_almost_equal(x.view(-1).numpy(), xcg.numpy(), decimal=4)
+        

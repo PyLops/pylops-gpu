@@ -94,5 +94,5 @@ class Diagonal(LinearOperator):
             y = diagadj * x
         else:
             x = x.reshape(self.dims)
-            y = diagadj * x
+            y = (diagadj * x).flatten()
         return y
