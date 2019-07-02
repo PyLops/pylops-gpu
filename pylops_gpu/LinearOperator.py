@@ -4,7 +4,7 @@ import numpy as np
 from pytorch_complex_tensor import ComplexTensor
 from pylops import LinearOperator as pLinearOperator
 from pylops_gpu.utils.complex import conj
-#from pylops_gpu.optimization.leastsquares import cg
+from pylops_gpu.optimization.leastsquares import cg
 
 
 class LinearOperator(pLinearOperator):
@@ -121,6 +121,8 @@ class LinearOperator(pLinearOperator):
         elif np.isscalar(x):
             return _ScaledLinearOperator(self, x)
         else:
+            if not isinstance(x, torch.Tensor):
+                x = torch.from_numpy(x)
             ndim = x.ndimension()
             if isinstance(x, ComplexTensor):
                 ndim -= 1
@@ -191,7 +193,6 @@ class LinearOperator(pLinearOperator):
     def _adjoint(self):
         """Default implementation of _adjoint; defers to rmatvec."""
         shape = (self.shape[1], self.shape[0])
-        print('shape', shape)
         return _CustomLinearOperator(shape, matvec=self.rmatvec,
                                      rmatvec=self.matvec,
                                      dtype=self.dtype, explicit=self.explicit,
@@ -223,7 +224,7 @@ class LinearOperator(pLinearOperator):
         return xest
 
     def __truediv__(self, y, niter=100, tol=1e-4):
-        xest = None #cg(self, y, niter=niter, tol=tol)[0]
+        xest = cg(self, y, niter=niter, tol=tol)[0]
         return xest
 
 
@@ -362,7 +363,6 @@ class _PowerLinearOperator(LinearOperator):
     def __init__(self, A, p):
         if not isinstance(A, pLinearOperator):
             raise ValueError('LinearOperator expected as A')
-        print('A.shape', A.shape)
         if A.shape[0] != A.shape[1]:
             raise ValueError('square LinearOperator expected, got %r' % A)
         if not np.issubdtype(type(p), int) or p < 0:

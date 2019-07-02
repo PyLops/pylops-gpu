@@ -2,7 +2,7 @@ import torch
 
 from pytorch_complex_tensor import ComplexTensor
 from pylops_gpu.utils.complex import conj
-from pylops_gpu import LinearOperator, aslinearoperator
+#from pylops_gpu import LinearOperator, aslinearoperator
 
 
 def cg(A, y, x=None, niter=10, tol=1e-10):
@@ -13,7 +13,7 @@ def cg(A, y, x=None, niter=10, tol=1e-10):
 
     Parameters
     ----------
-    A : :obj:`torch.Tensor` or :obj:`pylops_gpu.LinearOperator`
+    A : :obj:`pylops_gpu.LinearOperator`
         Operator to invert of size :math:`[N \times N]`
     y : :obj:`torch.Tensor`
         Data of size :math:`[N \times 1]`
@@ -32,8 +32,8 @@ def cg(A, y, x=None, niter=10, tol=1e-10):
         Max number of iterations model
     """
     complex_problem = True if isinstance(y, ComplexTensor) else False
-    if not isinstance(A, LinearOperator):
-        A = aslinearoperator(A)
+    #if not isinstance(A, LinearOperator):
+    #    A = aslinearoperator(A)
     if x is None:
         if complex_problem:
             x = ComplexTensor(torch.zeros((2 * y.shape[-1], 1),

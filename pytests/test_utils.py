@@ -1,11 +1,26 @@
 import pytest
+import torch
 import numpy as np
 
 from numpy.testing import assert_array_equal
+from pylops_gpu.utils.torch2numpy import torchtype_from_numpytype, \
+    numpytype_from_torchtype
 from pylops_gpu.utils.complex import *
 
 par1 = {'dims': (5,)}  # 1d
 par2 = {'dims': (5, 3)}  # 2d
+
+
+def test_typeconversion():
+    """Verify numpy to torch (and viceversa) type conversions
+    """
+    numpytypes = [np.float32, np.float64, np.int16, np.int32]
+    torchtypes = [torch.float32, torch.float64, torch.int16, torch.int32]
+    for numpytype, torchtype in zip(numpytypes, torchtypes):
+        torchtype_check = torchtype_from_numpytype(numpytype)
+        numpytype_check = numpytype_from_torchtype(torchtype)
+        assert numpytype_check == numpytype
+        assert torchtype_check == torchtype
 
 
 @pytest.mark.parametrize("par", [(par1), (par2)])
