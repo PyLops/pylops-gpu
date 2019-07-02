@@ -122,8 +122,9 @@ class LinearOperator(pLinearOperator):
             return _ScaledLinearOperator(self, x)
         else:
             if not isinstance(x, torch.Tensor):
-                x = torch.from_numpy(x)
-            ndim = x.ndimension()
+                ndim = torch.from_numpy(x).ndimension()
+            else:
+                ndim = x.ndimension()
             if isinstance(x, ComplexTensor):
                 ndim -= 1
             if ndim == 1 or ndim == 2 and x.shape[1] == 1:

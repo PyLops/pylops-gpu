@@ -27,6 +27,12 @@ def test_LinearOperator_fromnumpy(par):
     x = np.ones(par['ny'], dtype=numpytype_from_torchtype(par['dtype']))
     y = Dop.matvec(x)
     xadj = Dop.rmatvec(y)
-
     assert isinstance(y, np.ndarray)
     assert isinstance(xadj, np.ndarray)
+
+    y = Dop * x
+    xadj = Dop.H * x
+    assert isinstance(y, np.ndarray)
+    assert isinstance(xadj, np.ndarray)
+
+

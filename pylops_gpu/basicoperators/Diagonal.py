@@ -18,7 +18,7 @@ class Diagonal(LinearOperator):
 
     Parameters
     ----------
-    diag : :obj:`numpy.ndarray` or :obj:`torch.Tensor`
+    diag : :obj:`numpy.ndarray` or :obj:`torch.Tensor` or :obj:`pytorch_complex_tensor.ComplexTensor`
         Vector to be used for element-wise multiplication.
     dims : :obj:`list`, optional
         Number of samples for each dimension
