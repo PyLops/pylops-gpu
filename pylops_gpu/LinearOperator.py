@@ -465,7 +465,7 @@ class MatrixMult(LinearOperator):
         else:
             y = self.A.matmul(x)
         if self.reshape:
-            y = y.ravel()
+            y = y.view(-1)
         return y
 
     def _rmatvec(self, x):
@@ -477,7 +477,7 @@ class MatrixMult(LinearOperator):
         else:
             y = self.A.t().matmul(x)
         if self.reshape:
-            y = y.ravel()
+            y = y.view(-1)
         return y
 
     def inv(self):

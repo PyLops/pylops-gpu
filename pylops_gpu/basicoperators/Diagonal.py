@@ -52,7 +52,7 @@ class Diagonal(LinearOperator):
     """
     def __init__(self, diag, dims=None, dir=0, device='cpu',
                  togpu=(False, False), tocpu=(False, False),
-                 dtype=torch.float64):
+                 dtype=torch.float32):
         if not isinstance(diag, (torch.Tensor, ComplexTensor)):
             self.complex = True if np.iscomplexobj(diag) else False
             self.diag = torch.from_numpy(diag.flatten())
@@ -82,7 +82,7 @@ class Diagonal(LinearOperator):
             y = self.diag*x
         else:
             x = x.reshape(self.dims)
-            y = (self.diag*x).flatten()
+            y = (self.diag*x).view(-1)
         return y
 
     def _rmatvec(self, x):
@@ -94,5 +94,5 @@ class Diagonal(LinearOperator):
             y = diagadj * x
         else:
             x = x.reshape(self.dims)
-            y = (diagadj * x).flatten()
+            y = (diagadj * x).view(-1)
         return y
