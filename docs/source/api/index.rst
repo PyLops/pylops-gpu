@@ -18,7 +18,6 @@ Templates
 
     LinearOperator
 
-
 Basic operators
 ~~~~~~~~~~~~~~~
 
@@ -29,6 +28,17 @@ Basic operators
 
     MatrixMult
     Diagonal
+
+Signal processing
+~~~~~~~~~~~~~~~~~
+
+.. currentmodule:: pylops_gpu.signalprocessing
+
+.. autosummary::
+   :toctree: generated/
+
+    Convolve1D
+
 
 Solvers
 -------

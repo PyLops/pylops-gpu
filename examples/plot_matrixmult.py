@@ -12,8 +12,8 @@ For square :math:`\mathbf{A}`, we will use the
 :py:func:`pylops_gpu.optimization.leastsquares.cg` solver.
 
 """
-import numpy as np
 import torch
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as pltgs
 import pylops_gpu

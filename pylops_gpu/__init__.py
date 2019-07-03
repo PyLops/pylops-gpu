@@ -3,6 +3,7 @@ from .basicoperators import Diagonal
 
 from . import utils
 from . import basicoperators
+from . import signalprocessing
 from . import optimization
 
 
