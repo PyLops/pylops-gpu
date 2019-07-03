@@ -56,7 +56,12 @@ def test_Convolve1D(par):
 
         x = torch.zeros((par['nx']), dtype=torch.float32)
         x[par['nx']//2] = 1.
-        xcg = cg(Cop, Cop * x, niter=100)[0]
+        if par['offset'] == nfilt[0]//2:
+            # zero phase
+            xcg = cg(Cop, Cop * x, niter=100)[0]
+        else:
+            # non-zero phase
+            xcg = cg(Cop.H * Cop, Cop.H * (Cop * x), niter=100)[0]
         assert_array_almost_equal(x, xcg, decimal=1)
 
     # 1D on 2D
@@ -69,5 +74,11 @@ def test_Convolve1D(par):
     x[int(par['ny']/2-3):int(par['ny']/2+3),
       int(par['nx']/2-3):int(par['nx']/2+3)] = 1.
     x = x.flatten()
-    xcg = cg(Cop, Cop * x, niter=100)[0]
+    if par['offset'] == nfilt[0] // 2:
+        # zero phase
+        xcg = cg(Cop, Cop * x, niter=100)[0]
+    else:
+        # non-zero phase
+        xcg = cg(Cop.H * Cop, Cop.H * (Cop * x), niter=100)[0]
     assert_array_almost_equal(x, xcg, decimal=1)
+    
