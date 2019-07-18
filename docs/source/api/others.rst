@@ -17,9 +17,6 @@ Backends
    :toctree: generated/
 
     backend.device
-    complex.complextorch_fromnumpy
-    complex.complexnumpy_fromtorch
-
 
 Complex Tensors
 ~~~~~~~~~~~~~~~

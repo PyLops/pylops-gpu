@@ -6,7 +6,7 @@ from pylops_gpu.utils.complex import conj
 
 
 def cg(A, y, x=None, niter=10, tol=1e-10):
-    """Conjugate gradient
+    r"""Conjugate gradient
 
     Solve a system of equations given the square operator ``A`` and data ``y``
     using conjugate gradient iterations.
@@ -30,6 +30,7 @@ def cg(A, y, x=None, niter=10, tol=1e-10):
         Estimated model
     iiter : :obj:`torch.Tensor`
         Max number of iterations model
+
     """
     complex_problem = True if isinstance(y, ComplexTensor) else False
     #if not isinstance(A, LinearOperator):

@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 
-from torch.nn import ReflectionPad1d
+from torch.nn.functional import pad
 from pylops_gpu import LinearOperator
 
 
@@ -55,16 +55,12 @@ class Convolve1D(LinearOperator):
                  dtype=torch.float32):
         self.nh = h.size()[0]
         self.h = h.reshape(1, 1, self.nh)
-        self.offset = self.nh // 2 - int(offset)
+        self.offset = 2*(self.nh // 2 - int(offset))
         if self.offset != 0:
-            pad = ReflectionPad1d((self.offset if self.offset > 0 else 0,
-                                   -self.offset if self.offset < 0 else 0))
-            self.h = pad(self.h)
-            if self.offset > 0:
-                self.h = self.h[..., :-self.offset]
-            else:
-                self.h = self.h[..., -self.offset:]
-        self.hstar = torch.flip(h, dims=(0, )).reshape(1, 1, self.nh)
+            self.h = pad(self.h, (self.offset if self.offset > 0 else 0,
+                                  -self.offset if self.offset < 0 else 0),
+                         mode='constant')
+        self.padding = int(self.nh // 2 + np.abs(self.offset) // 2)
         self.dir = dir
         if dims is None:
             self.dims = (N, )
@@ -93,14 +89,14 @@ class Convolve1D(LinearOperator):
 
     def _matvec(self, x):
         if not self.reshape:
+            print()
             y = torch.torch.conv_transpose1d(x.reshape(1, 1, self.dims[0]),
-                                             self.h,
-                                             padding=self.nh // 2)
+                                             self.h, padding=self.padding)
         else:
             x = torch.reshape(x, self.dims).permute(self.permute)
             y = torch.torch.conv_transpose1d(x.reshape(self.otherdims_prod, 1,
                                                        self.dims[self.dir]),
-                                             self.h, padding=self.nh // 2)
+                                             self.h, padding=self.padding)
             y = y.reshape(self.dims_permute).permute(self.permute)
         y = y.flatten()
         return y
@@ -108,12 +104,12 @@ class Convolve1D(LinearOperator):
     def _rmatvec(self, x):
         if not self.reshape:
             y = torch.torch.conv1d(x.reshape(1, 1, self.dims[0]),
-                                   self.h, padding=self.nh // 2)
+                                   self.h, padding=self.padding)
         else:
             x = torch.reshape(x, self.dims).permute(self.permute)
             y = torch.torch.conv1d(x.reshape(self.otherdims_prod, 1,
                                              self.dims[self.dir]),
-                                             self.h, padding=self.nh // 2)
+                                             self.h, padding=self.padding)
             y = y.reshape(self.dims_permute).permute(self.permute)
         y = y.flatten()
         return y
