@@ -21,7 +21,7 @@ h2 = torch.from_numpy(np.outer(triang(nfilt[0], sym=True),
 par1_1d = {'nz': 21, 'ny': 51, 'nx': 51,
            'offset': nfilt[0] // 2, 'dir': 0}  # zero phase, first direction
 par2_1d = {'nz': 21, 'ny': 61, 'nx': 51,
-           'offset': 0, 'dir': 0}  # non-zero phase, first direction
+           'offset': 1, 'dir': 0}  # non-zero phase, first direction
 par3_1d = {'nz': 21, 'ny': 51, 'nx': 51,
            'offset': nfilt[0] // 2, 'dir': 1}  # zero phase, second direction
 par4_1d = {'nz': 21, 'ny': 61, 'nx': 51,
@@ -40,16 +40,19 @@ def test_Convolve1D(par):
     #1D
     if par['dir'] == 0:
         Cop = gConvolve1D(par['nx'], h=h1, offset=par['offset'],
-                         dtype=torch.float32)
+                          dtype=torch.float32)
         assert dottest(Cop, par['nx'], par['nx'])
 
         x = torch.zeros((par['nx']), dtype=torch.float32)
         x[par['nx']//2] = 1.
 
+        # comparison with pylops
         Cop_ = Convolve1D(par['nx'], h=h1.cpu().numpy(), offset=par['offset'],
                           dtype='float32')
-        assert_array_equal(Cop * x, Cop_ * x.cpu().numpy())
+        assert_array_almost_equal(Cop * x, Cop_ * x.cpu().numpy(), decimal=3)
+        #assert_array_equal(Cop * x, Cop_ * x.cpu().numpy())
 
+        # inversion
         if par['offset'] == nfilt[0]//2:
             # zero phase
             xcg = cg(Cop, Cop * x, niter=100)[0]
@@ -69,12 +72,15 @@ def test_Convolve1D(par):
       int(par['nx']/2-3):int(par['nx']/2+3)] = 1.
     x = x.flatten()
 
+    # comparison with pylops
     Cop_ = Convolve1D(par['ny'] * par['nx'], h=h1.cpu().numpy(),
                       offset=par['offset'],
                       dims=(par['ny'], par['nx']), dir=par['dir'],
                       dtype='float32')
-    assert_array_equal(Cop * x, Cop_ * x.cpu().numpy())
+    assert_array_almost_equal(Cop * x, Cop_ * x.cpu().numpy(), decimal=3)
+    #assert_array_equal(Cop * x, Cop_ * x.cpu().numpy())
 
+    # inversion
     if par['offset'] == nfilt[0] // 2:
         # zero phase
         xcg = cg(Cop, Cop * x, niter=100)[0]
