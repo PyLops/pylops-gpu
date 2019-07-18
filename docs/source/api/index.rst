@@ -28,6 +28,7 @@ Basic operators
 
     MatrixMult
     Diagonal
+    FirstDerivative
 
 Signal processing
 ~~~~~~~~~~~~~~~~~

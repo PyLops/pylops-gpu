@@ -1,5 +1,6 @@
 from .LinearOperator import LinearOperator, MatrixMult, aslinearoperator
 from .basicoperators import Diagonal
+from .basicoperators import FirstDerivative
 
 from . import utils
 from . import basicoperators

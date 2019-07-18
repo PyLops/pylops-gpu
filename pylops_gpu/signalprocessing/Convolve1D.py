@@ -73,7 +73,10 @@ class Convolve1D(LinearOperator):
                 self.otherdims = list(dims)
                 self.otherdims.pop(self.dir)
                 self.otherdims_prod = np.prod(self.dims) // self.dims[self.dir]
-                self.dims_permute = self.otherdims + [self.dims[self.dir]]
+                self.dims_permute = list(self.dims)
+                self.dims_permute[self.dir], self.dims_permute[-1] = \
+                    self.dims_permute[-1], self.dims_permute[self.dir]
+                self.dims_permute = tuple(self.dims_permute)
                 self.permute = np.arange(0, len(self.dims))
                 self.permute[self.dir], self.permute[-1] = \
                     self.permute[-1], self.permute[self.dir]
@@ -89,7 +92,6 @@ class Convolve1D(LinearOperator):
 
     def _matvec(self, x):
         if not self.reshape:
-            print()
             y = torch.torch.conv_transpose1d(x.reshape(1, 1, self.dims[0]),
                                              self.h, padding=self.padding)
         else:
@@ -109,7 +111,7 @@ class Convolve1D(LinearOperator):
             x = torch.reshape(x, self.dims).permute(self.permute)
             y = torch.torch.conv1d(x.reshape(self.otherdims_prod, 1,
                                              self.dims[self.dir]),
-                                             self.h, padding=self.padding)
+                                   self.h, padding=self.padding)
             y = y.reshape(self.dims_permute).permute(self.permute)
         y = y.flatten()
         return y

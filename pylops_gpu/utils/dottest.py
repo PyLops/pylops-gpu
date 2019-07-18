@@ -55,13 +55,13 @@ def dottest(Op, nr, nc, tol=1e-6, dtype=torch.float32,
     """
     np_dtype = torch.ones(1, dtype=torch.float32).numpy().dtype
     if complexflag in (0, 2):
-        u = torch.rand(nc, dtype=dtype)
+        u = torch.randn(nc, dtype=dtype)
     else:
         u = complextorch_fromnumpy(np.random.randn(nc).astype(np_dtype) +
                                    1j*np.random.randn(nc).astype(np_dtype))
 
     if complexflag in (0, 1):
-        v = torch.rand(nr, dtype=dtype)
+        v = torch.randn(nr, dtype=dtype)
     else:
         v = complextorch_fromnumpy(np.random.randn(nr).astype(np_dtype) + \
                                    1j*np.random.randn(nr).astype(np_dtype))
