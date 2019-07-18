@@ -78,7 +78,7 @@ Coming soon...
 Follow the instructions in [PyLops official documentation](https://pylops.readthedocs.io/).
 
 ## Documentation
-The official documentation of PyLops-GPU is coming soon...
+The official documentation of PyLops is available [here](https://pylops-gpu.readthedocs.io/).
 
 Visit this page to get started learning about different operators and their applications as well as how to
 create new operators yourself and make it to the ``Contributors`` list.

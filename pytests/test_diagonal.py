@@ -14,7 +14,8 @@ par1 = {'ny': 21, 'nx': 11, 'nt': 20,
         'dtype': torch.float32}  # real
 
 dev = device()
-np.random.seed(10)
+np.random.seed(0)
+torch.manual_seed(0)
 
 
 @pytest.mark.parametrize("par", [(par1)])
@@ -25,7 +26,7 @@ def test_Diagonal_1dsignal(par):
         d = (torch.arange(0, ddim, dtype=par['dtype']) + 1.).to(dev)
 
         Dop = Diagonal(d, dtype=par['dtype'])
-        assert dottest(Dop, ddim, ddim)
+        assert dottest(Dop, ddim, ddim, tol=1e-4)
 
         x = torch.ones(ddim, dtype=par['dtype']).to(dev)
         xcg = cg(Dop, Dop * x, niter=20)[0]
@@ -41,9 +42,10 @@ def test_Diagonal_2dsignal(par):
 
         Dop = Diagonal(d, dims=(par['nx'], par['nt']),
                        dir=idim, dtype=par['dtype'])
-        assert dottest(Dop, par['nx']*par['nt'], par['nx']*par['nt'])
+        assert dottest(Dop, par['nx']*par['nt'], par['nx']*par['nt'], tol=1e-4)
 
         x = torch.ones((par['nx'], par['nt']), dtype=par['dtype']).to(dev)
         xcg = cg(Dop, Dop * x.view(-1), niter=20)[0]
 
         assert_array_almost_equal(x.view(-1).numpy(), xcg.numpy(), decimal=4)
+        

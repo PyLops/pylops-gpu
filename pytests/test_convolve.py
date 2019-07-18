@@ -34,6 +34,8 @@ par6_1d = {'nz': 21, 'ny': 61, 'nx': 51,
            'dir': 2}  # non-zero phase, third direction
 
 dev = device()
+np.random.seed(0)
+torch.manual_seed(0)
 
 
 @pytest.mark.parametrize("par", [(par1_1d), (par2_1d), (par3_1d), (par4_1d)])

@@ -19,7 +19,8 @@ par1j = {'ny': 11, 'nx': 11, 'imag': 1j,
 #         'dtype': 'float32'}  # overdetermined complex
 
 dev = device()
-np.random.seed(10)
+np.random.seed(0)
+torch.manual_seed(0)
 
 
 @pytest.mark.parametrize("par", [(par1), (par1j)])

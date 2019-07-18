@@ -11,7 +11,8 @@ par2 = {'ny': 21, 'nx': 11,
         'dtype': torch.float32}  # overdetermined
 
 dev = device()
-np.random.seed(10)
+np.random.seed(0)
+torch.manual_seed(0)
 
 
 @pytest.mark.parametrize("par", [(par1)])

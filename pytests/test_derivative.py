@@ -29,6 +29,8 @@ par4e = {'nz': 11, "ny": 51, 'nx': 61,
          'dz': 0.4, 'dy': 2., 'dx': 0.5}  # odd with non-unitary sampling
 
 dev = device()
+np.random.seed(0)
+torch.manual_seed(0)
 
 
 @pytest.mark.parametrize("par", [(par1), (par2), (par3), (par4),
