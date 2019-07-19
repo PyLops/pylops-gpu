@@ -73,11 +73,12 @@ def test_LinearOperator_prod(par):
     d1 = torch.arange(10, par['ny'] + 10, dtype=par['dtype']).to(dev)
     Dop = Diagonal(d)
     D1op = Diagonal(d1)
+    Dprodop = D1op * Dop
 
     x = torch.ones(par['ny'], dtype=par['dtype']).to(dev)
     y = d * d1 * x
     y1 = D1op.matvec(Dop.matvec(x))
-    y2 = D1op * (Dop * x)
+    y2 = Dprodop * x
     assert_array_equal(y.cpu().numpy(), y1.cpu().numpy())
     assert_array_equal(y.cpu().numpy(), y2.cpu().numpy())
 

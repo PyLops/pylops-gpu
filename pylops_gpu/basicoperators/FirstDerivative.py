@@ -1,10 +1,21 @@
 import torch
+
+from pylops_gpu import LinearOperator
 from pylops_gpu.signalprocessing import Convolve1D
 
 
+"""
 def FirstDerivative(N, dims=None, dir=0, sampling=1., device='cpu',
                     togpu=(False, False), tocpu=(False, False),
                     dtype=torch.float32):
+
+    h = torch.torch.tensor([0.5, 0, -0.5], dtype=dtype).to(device) / sampling
+    dop = Convolve1D(N, h, offset=1, dims=dims, dir=dir, device=device,
+                     togpu=togpu, tocpu=tocpu, dtype=dtype)
+    return dop
+"""
+
+class FirstDerivative(LinearOperator):
     r"""First derivative.
 
     Apply second-order centered first derivative.
@@ -31,10 +42,13 @@ def FirstDerivative(N, dims=None, dir=0, sampling=1., device='cpu',
     dtype : :obj:`torch.dtype`, optional
         Type of elements in input array.
 
-    Returns
+    Attributes
     ----------
-    dop : :obj:`pylops_gpu.LinearOperator`
-        First derivative operator
+    shape : :obj:`tuple`
+        Operator shape
+    explicit : :obj:`bool`
+        Operator contains a matrix that can be solved explicitly (``True``) or
+        not (``False``)
 
     Notes
     -----
@@ -46,7 +60,17 @@ def FirstDerivative(N, dims=None, dir=0, sampling=1., device='cpu',
     differently compared to the PyLops equivalent operator.
 
     """
-    h = torch.torch.tensor([0.5, 0, -0.5], dtype=dtype).to(device) / sampling
-    dop = Convolve1D(N, h, offset=1, dims=dims, dir=dir, device=device,
-                     togpu=togpu, tocpu=tocpu, dtype=dtype)
-    return dop
+    def __init__(self, N, dims=None, dir=0, sampling=1., device='cpu',
+                 togpu=(False, False), tocpu=(False, False),
+                 dtype=torch.float32):
+        h = torch.torch.tensor([0.5, 0, -0.5],
+                               dtype=dtype).to(device) / sampling
+        self.device = device
+        self.togpu = togpu
+        self.tocpu = tocpu
+        self.shape = (N, N)
+        self.dtype = dtype
+        self.explicit = False
+        self.Op = Convolve1D(N, h, offset=1, dims=dims, dir=dir,
+                             zero_edges=True, device=device,
+                             togpu=togpu, tocpu=tocpu, dtype=dtype)

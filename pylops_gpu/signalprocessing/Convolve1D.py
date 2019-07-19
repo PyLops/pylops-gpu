@@ -25,6 +25,8 @@ class Convolve1D(LinearOperator):
         (``None`` if only one dimension is available)
     dir : :obj:`int`, optional
         Direction along which convolution is applied
+    zero_edges : :obj:`bool`, optional
+        Zero output at edges (`True`) or not (`False`)
     device : :obj:`str`, optional
         Device to be used
     togpu : :obj:`tuple`, optional
@@ -50,8 +52,8 @@ class Convolve1D(LinearOperator):
     details.
 
     """
-    def __init__(self, N, h, offset=0, dims=None, dir=0, device='cpu',
-                 togpu=(False, False), tocpu=(False, False),
+    def __init__(self, N, h, offset=0, dims=None, dir=0, zero_edges=False,
+                 device='cpu', togpu=(False, False), tocpu=(False, False),
                  dtype=torch.float32):
         self.nh = h.size()[0]
         self.h = h.reshape(1, 1, self.nh)
@@ -64,6 +66,9 @@ class Convolve1D(LinearOperator):
         self.dir = dir
         if dims is None:
             self.dims = (N, )
+            self.reshape = False
+        elif len(dims) == 1:
+            self.dims = dims
             self.reshape = False
         else:
             if np.prod(dims) != N:
@@ -83,6 +88,7 @@ class Convolve1D(LinearOperator):
                 self.permute = tuple(self.permute)
                 self.reshape = True
         self.shape = (np.prod(self.dims), np.prod(self.dims))
+        self.zero_edges = zero_edges
         self.device = device
         self.togpu = togpu
         self.tocpu = tocpu
@@ -92,8 +98,11 @@ class Convolve1D(LinearOperator):
 
     def _matvec(self, x):
         if not self.reshape:
-            y = torch.torch.conv_transpose1d(x.reshape(1, 1, self.dims[0]),
-                                             self.h, padding=self.padding)
+            x = x.reshape(1, 1, self.dims[0])
+            y = torch.torch.conv_transpose1d(x, self.h, padding=self.padding)
+            if self.zero_edges:
+                y[..., :self.nh // 2] = 0
+                y[..., -self.nh // 2 + 1:] = 0
         else:
             x = torch.reshape(x, self.dims).permute(self.permute)
             y = torch.torch.conv_transpose1d(x.reshape(self.otherdims_prod, 1,
@@ -105,8 +114,13 @@ class Convolve1D(LinearOperator):
 
     def _rmatvec(self, x):
         if not self.reshape:
-            y = torch.torch.conv1d(x.reshape(1, 1, self.dims[0]),
-                                   self.h, padding=self.padding)
+            x = x.reshape(1, 1, self.dims[0])
+            if self.zero_edges:
+                x[..., :self.nh // 2] = 0
+                x[..., -self.nh // 2 + 1:] = 0
+
+            y = torch.torch.conv1d(x, self.h, padding=self.padding)
+
         else:
             x = torch.reshape(x, self.dims).permute(self.permute)
             y = torch.torch.conv1d(x.reshape(self.otherdims_prod, 1,

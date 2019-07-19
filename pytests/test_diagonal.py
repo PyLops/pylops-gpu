@@ -48,4 +48,3 @@ def test_Diagonal_2dsignal(par):
         xcg = cg(Dop, Dop * x.view(-1), niter=20)[0]
 
         assert_array_almost_equal(x.view(-1).numpy(), xcg.numpy(), decimal=4)
-        

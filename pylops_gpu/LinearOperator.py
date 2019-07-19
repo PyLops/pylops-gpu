@@ -3,6 +3,7 @@ import numpy as np
 
 from pytorch_complex_tensor import ComplexTensor
 from pylops import LinearOperator as pLinearOperator
+from pylops_gpu.utils.torch2numpy import numpytype_from_torchtype
 from pylops_gpu.utils.complex import conj
 from pylops_gpu.optimization.leastsquares import cg
 
@@ -406,7 +407,7 @@ class MatrixMult(LinearOperator):
 
     Parameters
     ----------
-    A : :obj:`torch.Tensor` or :obj:`pytorch_complex_tensor.ComplexTensor`
+    A : :obj:`torch.Tensor` or :obj:`pytorch_complex_tensor.ComplexTensor` or :obj:`numpy.ndarray`
         Matrix.
     dims : :obj:`tuple`, optional
         Number of samples for each other dimension of model
@@ -435,8 +436,13 @@ class MatrixMult(LinearOperator):
     def __init__(self, A, dims=None, device='cpu',
                  togpu=(False, False), tocpu=(False, False),
                  dtype=torch.float32):
-        self.Op = None
-        self.A = A
+        if not isinstance(A, (torch.Tensor, ComplexTensor)):
+            self.complex = True if np.iscomplexobj(A) else False
+            self.A = \
+                torch.from_numpy(A.astype(numpytype_from_torchtype(dtype)))
+        else:
+            self.complex = True if isinstance(A, ComplexTensor) else False
+            self.A = A
         if dims is None:
             self.reshape = False
             self.shape = A.shape
@@ -455,6 +461,7 @@ class MatrixMult(LinearOperator):
         self.togpu = togpu
         self.tocpu = tocpu
         self.dtype = dtype
+        self.Op = None
 
     def _matvec(self, x):
         if self.reshape:

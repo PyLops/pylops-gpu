@@ -1,7 +1,7 @@
 import torch
 import numpy as np
-from pytorch_complex_tensor import ComplexTensor
 
+from pytorch_complex_tensor import ComplexTensor
 from pylops_gpu import LinearOperator
 
 
