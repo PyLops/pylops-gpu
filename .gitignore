@@ -18,7 +18,7 @@ dist
 pylops_gpu.egg-info/
 
 # setuptools_scm generated  #
-pylops_distributed/version.py
+pylops_gpu/version.py
 
 # Development #
 .ipynb_checkpoints/

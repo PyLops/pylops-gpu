@@ -114,13 +114,12 @@ def divide(x, y):
     divn = xn / yn
     # convert back to torch
     if divn.size == 1:
-        divn = np.asscalar(divn)
+        divn = divn.item()
     else:
         if np.iscomplexobj(divn):
             divn = complextorch_fromnumpy(divn)
         else:
             divn = torch.from_numpy(divn)
-    print(type(divn))
     return divn
 
 

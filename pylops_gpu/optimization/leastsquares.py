@@ -42,22 +42,17 @@ def cg(A, y, x=None, niter=10, tol=1e-10):
         else:
             x = torch.zeros_like(y)
     r = y - A.matvec(x)
-    #print('r', r)
     d = r.clone()
     if complex_problem:
         d = ComplexTensor(d)
         kold = torch.sum(r * r)
     else:
         kold = torch.sum(r * r)
-    #print('kold', kold)
     iiter = 0
     while iiter < niter and torch.abs(kold) > tol:
         Ad = A.matvec(d)
         dAd = (d*Ad).sum() if complex_problem else torch.sum(d * Ad)
-        #print('Ad', Ad)
-        #print('dAd', dAd)
         a = divide(kold, dAd) if complex_problem else kold / dAd
-        #print('a', a)
         x += a * d
         r -= a * Ad
         k = torch.sum(r * r) if complex_problem else torch.sum(r * r)
