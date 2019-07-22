@@ -3,6 +3,8 @@ import numpy as np
 
 from pytorch_complex_tensor import ComplexTensor
 from pylops_gpu import LinearOperator
+from pylops_gpu.utils.complex import conj, flatten, reshape, \
+    complextorch_fromnumpy
 
 
 class Diagonal(LinearOperator):
@@ -55,10 +57,12 @@ class Diagonal(LinearOperator):
                  dtype=torch.float32):
         if not isinstance(diag, (torch.Tensor, ComplexTensor)):
             self.complex = True if np.iscomplexobj(diag) else False
-            self.diag = torch.from_numpy(diag.flatten())
+            self.diag = \
+                complextorch_fromnumpy(diag.flatten()) if self.complex \
+                    else torch.from_numpy(diag.flatten())
         else:
             self.complex = True if isinstance(diag, ComplexTensor) else False
-            self.diag = diag.flatten()
+            self.diag = flatten(diag) if self.complex else diag.flatten()
         if dims is None:
             self.shape = (len(self.diag), len(self.diag))
             self.dims = None
@@ -66,7 +70,8 @@ class Diagonal(LinearOperator):
         else:
             diagdims = [1] * len(dims)
             diagdims[dir] = dims[dir]
-            self.diag = self.diag.reshape(diagdims)
+            self.diag = reshape(self.diag, diagdims) if self.complex \
+                else self.diag.reshape(diagdims)
             self.shape = (np.prod(dims), np.prod(dims))
             self.dims = dims
             self.reshape = True
@@ -79,20 +84,28 @@ class Diagonal(LinearOperator):
 
     def _matvec(self, x):
         if not self.reshape:
-            y = self.diag*x
+            y = self.diag * x
         else:
-            x = x.reshape(self.dims)
-            y = (self.diag*x).view(-1)
+            if self.complex:
+                x = reshape(x, self.dims)
+                y = flatten(self.diag * x)
+            else:
+                x = x.reshape(self.dims)
+                y = (self.diag * x).view(-1)
         return y
 
     def _rmatvec(self, x):
         if self.complex:
-            diagadj = self.diag.conj()
+            diagadj = conj(self.diag)
         else:
             diagadj = self.diag
         if not self.reshape:
             y = diagadj * x
         else:
-            x = x.reshape(self.dims)
-            y = (diagadj * x).view(-1)
+            if self.complex:
+                x = reshape(x, self.dims)
+                y = flatten(diagadj * x)
+            else:
+                x = x.reshape(self.dims)
+                y = (diagadj * x).view(-1)
         return y

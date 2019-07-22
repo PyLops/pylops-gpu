@@ -42,9 +42,12 @@ def test_complex_attrs(par):
     subt = xt - yt
     mult = xt * yt
     xct = conj(xt)
+    xflattened = flatten(xt)
+
 
     assert_array_equal(np.abs(x), xt.abs().numpy().squeeze()) # abs
     assert_array_equal(sum, complexnumpy_fromtorch(sumt)) # sum
     assert_array_equal(sub, complexnumpy_fromtorch(subt)) # sub
     assert_array_equal(mul, complexnumpy_fromtorch(mult)) # mul
     assert_array_equal(xc, complexnumpy_fromtorch(xct)) # conj
+    assert xflattened.shape[1] == np.prod(np.array(par['dims'])) # flatten

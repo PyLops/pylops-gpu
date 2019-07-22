@@ -108,6 +108,9 @@ class Convolve1D(LinearOperator):
             y = torch.torch.conv_transpose1d(x.reshape(self.otherdims_prod, 1,
                                                        self.dims[self.dir]),
                                              self.h, padding=self.padding)
+            if self.zero_edges:
+                y[..., :self.nh // 2] = 0
+                y[..., -self.nh // 2 + 1:] = 0
             y = y.reshape(self.dims_permute).permute(self.permute)
         y = y.flatten()
         return y
@@ -118,11 +121,13 @@ class Convolve1D(LinearOperator):
             if self.zero_edges:
                 x[..., :self.nh // 2] = 0
                 x[..., -self.nh // 2 + 1:] = 0
-
             y = torch.torch.conv1d(x, self.h, padding=self.padding)
 
         else:
             x = torch.reshape(x, self.dims).permute(self.permute)
+            if self.zero_edges:
+                x[..., :self.nh // 2] = 0
+                x[..., -self.nh // 2 + 1:] = 0
             y = torch.torch.conv1d(x.reshape(self.otherdims_prod, 1,
                                              self.dims[self.dir]),
                                    self.h, padding=self.padding)

@@ -4,7 +4,7 @@ import numpy as np
 from pytorch_complex_tensor import ComplexTensor
 from pylops import LinearOperator as pLinearOperator
 from pylops_gpu.utils.torch2numpy import numpytype_from_torchtype
-from pylops_gpu.utils.complex import conj
+from pylops_gpu.utils.complex import conj, reshape, flatten
 from pylops_gpu.optimization.leastsquares import cg
 
 
@@ -453,38 +453,52 @@ class MatrixMult(LinearOperator):
             self.dims = np.array(dims, dtype=np.int)
             self.shape = (A.shape[0]*np.prod(self.dims),
                           A.shape[1]*np.prod(self.dims))
+            self.newshape = \
+                (tuple(np.insert([np.prod(self.dims)], 0, self.A.shape[1])),
+                 tuple(np.insert([np.prod(self.dims)], 0, self.A.shape[0])))
+
         self.complex = True if isinstance(A, ComplexTensor) else False
         if self.complex:
             self.Ac = conj(A).t()
-        self.explicit = True
         self.device = device
         self.togpu = togpu
         self.tocpu = tocpu
         self.dtype = dtype
+        self.explicit = True
         self.Op = None
 
     def _matvec(self, x):
         if self.reshape:
-            x = torch.reshape(x, np.insert([np.prod(self.dims)], 0,
-                                           self.A.shape[1]))
+            x = reshape(x, self.newshape[0]) if self.complex else \
+                torch.reshape(x, self.newshape[0])
+        else:
+            if self.complex:
+                x = x.t()
         if self.complex:
-            y = self.A.mm(x.t()).t()
+            y = self.A.mm(x)
+            if not self.reshape:
+                y = y.t()
         else:
             y = self.A.matmul(x)
         if self.reshape:
-            y = y.view(-1)
+            y = flatten(y) if self.complex else y.view(-1)
         return y
 
     def _rmatvec(self, x):
         if self.reshape:
-            x = np.reshape(x, np.insert([np.prod(self.dims)], 0,
-                                        self.A.shape[0]))
+            x = reshape(x, self.newshape[1]) if self.complex else \
+                torch.reshape(x, self.newshape[1])
+        else:
+            if self.complex:
+                x = x.t()
         if self.complex:
-            y = self.Ac.mm(x.t()).t()
+            y = self.Ac.mm(x)
+            if not self.reshape:
+                y = y.t()
         else:
             y = self.A.t().matmul(x)
         if self.reshape:
-            y = y.view(-1)
+            y = flatten(y) if self.complex else y.view(-1)
         return y
 
     def inv(self):

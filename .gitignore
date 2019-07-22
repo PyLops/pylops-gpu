@@ -15,7 +15,7 @@ db.sqlite3
 # Build #
 build
 dist
-pylops_distributed.egg-info/
+pylops_gpu.egg-info/
 
 # setuptools_scm generated  #
 pylops_distributed/version.py

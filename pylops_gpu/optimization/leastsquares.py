@@ -1,7 +1,7 @@
 import torch
 
 from pytorch_complex_tensor import ComplexTensor
-from pylops_gpu.utils.complex import conj
+from pylops_gpu.utils.complex import divide
 #from pylops_gpu import LinearOperator, aslinearoperator
 
 
@@ -41,22 +41,26 @@ def cg(A, y, x=None, niter=10, tol=1e-10):
                                           dtype=y.dtype)).t()
         else:
             x = torch.zeros_like(y)
-
     r = y - A.matvec(x)
+    #print('r', r)
     d = r.clone()
     if complex_problem:
         d = ComplexTensor(d)
-        kold = torch.sum(conj(r) * r)
+        kold = torch.sum(r * r)
     else:
         kold = torch.sum(r * r)
+    #print('kold', kold)
     iiter = 0
-    while iiter < niter and kold > tol:
+    while iiter < niter and torch.abs(kold) > tol:
         Ad = A.matvec(d)
-        dAd = torch.sum(conj(d) * Ad) if complex_problem else torch.sum(d * Ad)
-        a = kold / dAd
+        dAd = (d*Ad).sum() if complex_problem else torch.sum(d * Ad)
+        #print('Ad', Ad)
+        #print('dAd', dAd)
+        a = divide(kold, dAd) if complex_problem else kold / dAd
+        #print('a', a)
         x += a * d
         r -= a * Ad
-        k = torch.sum(conj(r) * r) if complex_problem else torch.sum(r * r)
+        k = torch.sum(r * r) if complex_problem else torch.sum(r * r)
         b = k / kold
         d = r + b * d
         kold = k

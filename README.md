@@ -72,10 +72,18 @@ You need **Python 3.6.4 or greater**.
 #### From PyPi
 Coming soon...
 
+#### From Github
+
+You can also directly install from the master node
+
+```
+pip install git+https://git@github.com/equinor/pylops-gpu.git@master
+```
+
 ## Contributing
 *Feel like contributing to the project? Adding new operators or tutorial?*
 
-Follow the instructions in [PyLops official documentation](https://pylops.readthedocs.io/).
+Follow the instructions from [PyLops official documentation](https://pylops.readthedocs.io/en/latest/contributing.html).
 
 ## Documentation
 The official documentation of PyLops is available [here](https://pylops-gpu.readthedocs.io/).
