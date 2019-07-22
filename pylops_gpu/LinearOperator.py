@@ -439,7 +439,7 @@ class MatrixMult(LinearOperator):
         if not isinstance(A, (torch.Tensor, ComplexTensor)):
             self.complex = True if np.iscomplexobj(A) else False
             self.A = \
-                torch.from_numpy(A.astype(numpytype_from_torchtype(dtype)))
+                torch.from_numpy(A.astype(numpytype_from_torchtype(dtype))).to(device)
         else:
             self.complex = True if isinstance(A, ComplexTensor) else False
             self.A = A

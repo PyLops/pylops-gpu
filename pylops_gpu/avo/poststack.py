@@ -96,8 +96,8 @@ def PoststackLinearModelling(wav, nt0, spatdims=None, explicit=False,
     implementation details.
 
     """
-    if not isinstance(wav, torch.Tensor):
-        wav = torch.from_numpy(wav)
+    if not isinstance(wav, torch.Tensor) and not explicit:
+        wav = torch.from_numpy(wav).to(device)
     return _PoststackLinearModelling(wav, nt0, spatdims=spatdims,
                                      explicit=explicit, sparse=False,
                                      _MatrixMult=gMatrixMult,
