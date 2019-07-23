@@ -1,13 +1,9 @@
 numpy>=1.15.0
 scipy>=1.1.0
-torch>=1.2.0
+https://download.pytorch.org/whl/cpu/torch-1.2.0%2Bcpu-cp36-cp36m-manylinux1_x86_64.whl
 pytorch_complex_tensor
-pylops[advanced]
+pylops
 matplotlib
-ipython
-pytest
-pytest-runner
-setuptools_scm
 Sphinx
 sphinx-rtd-theme
 sphinx-gallery

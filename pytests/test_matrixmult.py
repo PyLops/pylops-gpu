@@ -2,8 +2,8 @@ import pytest
 import torch
 
 from numpy.testing import assert_array_almost_equal
-from pylops_gpu.utils import dottest
 from pylops_gpu.utils.backend import device
+from pylops_gpu.utils import dottest
 from pylops_gpu.utils.complex import *
 from pylops_gpu.utils.torch2numpy import *
 from pylops_gpu import MatrixMult

@@ -6,16 +6,12 @@ channels:
 dependencies:
   - python>=3.6.4
   - numpy>=1.15.0
-  - pytorch-cpu>=1.1.0
-  - torchvision-cpu
+  - scipy>=1.1.0
+  - pytorch>=1.2.0
   - pylops
-  - pytest
   - Sphinx
   - numpydoc
   - pip:
-    - spgl1
-    - pytorch-complex-tensor
-    - pytest-runner
     - setuptools_scm
     - sphinx-rtd-theme
     - sphinx-gallery

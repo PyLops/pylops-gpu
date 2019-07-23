@@ -3,6 +3,7 @@
 [![AzureDevOps Status](https://dev.azure.com/MRAVA/PyLops/_apis/build/status/equinor.pylops-gpu?branchName=master)](https://dev.azure.com/MRAVA/PyLops/_build/latest?definitionId=2&branchName=master)
 [![Documentation Status](https://readthedocs.org/projects/pylops-gpu/badge/?version=latest)](https://pylops-gpu.readthedocs.io/en/latest/?badge=latest)
 [![OS-support](https://img.shields.io/badge/OS-linux,osx-850A8B.svg)](https://github.com/equinor/pylops-gpu)
+[![Slack Status](https://img.shields.io/badge/chat-slack-green.svg)](https://pylops.slack.com)
 
 :vertical_traffic_light: :vertical_traffic_light: This library is under early development.
 Expect things to constantly change until version v1.0.0. :vertical_traffic_light: :vertical_traffic_light:
@@ -67,7 +68,7 @@ This repository is organized as follows:
 
 ## Getting started
 
-You need **Python 3.6.4 or greater**.
+You need **Python 3.5 or greater**.
 
 #### From PyPi
 Coming soon...
@@ -107,8 +108,9 @@ you are required to rebuild the entire documentation before your changes will be
 
 ## History
 PyLops-GPU was initially written and it is currently maintained by [Equinor](https://www.equinor.com).
-It is a flexible and scalable python library for large-scale optimization with linear
-operators that can be tailored to our needs, and as contribution to the free software community.
+It is an extension of [PyLops](https://pylops.readthedocs.io/en/latest/) for large-scale optimization with
+*GPU-driven* linear operators on that can be tailored to our needs, and as contribution to the free software community.
+
 
 
 ## Contributors

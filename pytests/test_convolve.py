@@ -40,7 +40,7 @@ torch.manual_seed(0)
 
 @pytest.mark.parametrize("par", [(par1_1d), (par2_1d), (par3_1d), (par4_1d)])
 def test_Convolve1D(par):
-    """Dot-test, comparison with pylops and and inversion for Convolve1D
+    """Dot-test, comparison with pylops and inversion for Convolve1D
     operator
     """
     np.random.seed(10)
@@ -118,7 +118,6 @@ def test_Convolve1D(par):
                      dims=(par['nz'], par['ny'], par['nx']), dir=par['dir'],
                      dtype='float32')
     assert_array_almost_equal(gCop * x, Cop * x.cpu().numpy(), decimal=3)
-    # assert_array_equal(gCop * x, Cop * x.cpu().numpy())
 
     # inversion
     if par['offset'] == nfilt[0] // 2:

@@ -109,3 +109,15 @@ class Diagonal(LinearOperator):
                 x = x.reshape(self.dims)
                 y = (diagadj * x).view(-1)
         return y
+
+    def matrix(self):
+        """Return diagonal matrix as dense :obj:`torch.Tensor`
+
+        Returns
+        ----------
+        densemat : :obj:`torch.Tensor`
+            Dense matrix.
+
+        """
+        densemat = torch.diag(self.diag.squeeze())
+        return densemat

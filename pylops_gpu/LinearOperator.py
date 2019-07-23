@@ -26,8 +26,13 @@ class LinearOperator(pLinearOperator):
 
     Parameters
     ----------
+    shape : :obj:`tuple`
+        Operator shape
+    dtype : :obj:`torch.dtype`, optional
+        Type of elements in input array.
     Op : :obj:`pylops.LinearOperator`
-        Operator
+        Operator to wrap in ``LinearOperator``
+        (if ``None``, self must implement ``_matvec_`` and  ``_rmatvec_``)
     explicit : :obj:`bool`
         Operator contains a matrix that can be solved explicitly
         (``True``) or not (``False``)
@@ -105,18 +110,16 @@ class LinearOperator(pLinearOperator):
 
         Parameters
         ----------
-        x : array_like
+        x : :obj:`torch.Tensor` or :obj:`pytorch_complex_tensor.ComplexTensor`
             1-d or 2-d array, representing a vector or matrix.
 
         Returns
         -------
-        Ax : array
+        Ax : :obj:`torch.Tensor` or :obj:`pytorch_complex_tensor.ComplexTensor`
             1-d or 2-d array (depending on the shape of x) that represents
             the result of applying this linear operator on x.
 
         """
-        #print('x', x, type(x), type(x) == MatrixMult)
-        #print(isinstance(x, LinearOperator))
         if isinstance(x, LinearOperator):
             return _ProductLinearOperator(self, x)
         elif np.isscalar(x):
@@ -225,8 +228,9 @@ class LinearOperator(pLinearOperator):
         xest = self.__truediv__(y, niter=niter, tol=tol)
         return xest
 
-    def __truediv__(self, y, niter=100, tol=1e-4):
-        xest = cg(self, y, niter=niter, tol=tol)[0]
+    def __truediv__(self, y, niter=None, tol=1e-4):
+        xest = cg(self, y, niter=self.shape[1] if niter is None else niter,
+                  tol=tol)[0]
         return xest
 
 
@@ -276,7 +280,7 @@ class _CustomLinearOperator(LinearOperator):
 class _SumLinearOperator(LinearOperator):
     def __init__(self, A, B):
         if not isinstance(A, pLinearOperator) or \
-                not isinstance(B, LinearOperator):
+                not isinstance(B, pLinearOperator):
             raise ValueError('both operands have to be a LinearOperator')
         if A.shape != B.shape:
             raise ValueError('cannot add %r and %r: shape mismatch'
@@ -306,12 +310,13 @@ class _SumLinearOperator(LinearOperator):
 class _ProductLinearOperator(LinearOperator):
     def __init__(self, A, B):
         if not isinstance(A, pLinearOperator) or \
-                not isinstance(B, LinearOperator):
+                not isinstance(B, pLinearOperator):
             raise ValueError('both operands have to be a LinearOperator')
         if A.shape[1] != B.shape[0]:
             raise ValueError('cannot multiply %r and %r: shape mismatch'
                              % (A, B))
-        super(_ProductLinearOperator, self).__init__(shape=A.shape,
+        super(_ProductLinearOperator, self).__init__(shape=(A.shape[0],
+                                                            B.shape[1]),
                                                      dtype=A.dtype, Op=None,
                                                      explicit=A.explicit,
                                                      device=A.device,

@@ -40,6 +40,11 @@ class MatrixMult(LinearOperator):
         Operator contains a matrix that can be solved explicitly
         (``True``) or not (``False``)
 
+    Notes
+    -----
+    Refer to :class:`pylops.basicoperators.MatrixMult` for
+    implementation details.
+
     """
     def __init__(self, A, dims=None, device='cpu',
                  togpu=(False, False), tocpu=(False, False),

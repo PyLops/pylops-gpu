@@ -3,10 +3,22 @@
 
 PyLops-GPU Utilities
 ====================
-Alongside with its *Linear Operators* and *Solvers*, PyLops-GPU contains also a number of auxiliary routines.
+Alongside with its *Linear Operators* and *Solvers*, PyLops-GPU contains
+also a number of auxiliary routines.
+
 
 Shared
 ------
+
+Dot-test
+~~~~~~~~
+
+.. currentmodule:: pylops_gpu.utils
+
+.. autosummary::
+   :toctree: generated/
+
+    dottest
 
 Backends
 ~~~~~~~~
@@ -17,6 +29,19 @@ Backends
    :toctree: generated/
 
     backend.device
+
+
+Torch2Numpy
+~~~~~~~~~~~
+
+.. currentmodule:: pylops_gpu.utils
+
+.. autosummary::
+   :toctree: generated/
+
+    torch2numpy.numpytype_from_torchtype
+    torch2numpy.torchtype_from_numpytype
+
 
 Complex Tensors
 ~~~~~~~~~~~~~~~
@@ -29,4 +54,7 @@ Complex Tensors
     complex.complextorch_fromnumpy
     complex.complexnumpy_fromtorch
     complex.conj
+    complex.divide
+    complex.reshape
+    complex.flatten
 

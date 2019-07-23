@@ -18,6 +18,7 @@ Templates
 
     LinearOperator
 
+
 Basic operators
 ~~~~~~~~~~~~~~~
 
@@ -28,6 +29,7 @@ Basic operators
 
     MatrixMult
     Diagonal
+    VStack
 
 
 Smoothing and derivatives
@@ -58,15 +60,17 @@ Solvers
 Low-level solvers
 ~~~~~~~~~~~~~~~~~
 
-.. currentmodule:: pylops_gpu.optimization
+.. currentmodule:: pylops_gpu.optimization.cg
 
 .. autosummary::
    :toctree: generated/
 
-    cg.cg
+    cg
 
 Least-squares
 ~~~~~~~~~~~~~
+
+.. currentmodule:: pylops_gpu.optimization
 
 .. autosummary::
    :toctree: generated/

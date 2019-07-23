@@ -49,9 +49,13 @@ autodoc_member_order = 'bysource'
 ## Default flags used by autodoc directives
 autodoc_default_flags = ['members']
 
+## Mocking packages that are not installed when building doc
+#autodoc_mock_imports = ["torch"]
+
 numpydoc_show_class_members = False
 numpydoc_show_inherited_class_members = False
 numpydoc_class_members_toctree = False
+
 
 sphinx_gallery_conf = {
     # path to your examples scripts
@@ -70,6 +74,7 @@ sphinx_gallery_conf = {
     # Insert links to documentation of objects in the examples
     'reference_url': {'pylops_gpu': None}
 }
+
 
 # Always show the source code that generates a plot
 plot_include_source = True

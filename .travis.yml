@@ -1,33 +1,16 @@
-language: python
-dist: trusty
-python:
-  - "3.6"
-matrix:
-  include:
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-4.9
-      env:
-         - MATRIX_EVAL="export CC=gcc-4.9 && export CXX=g++-4.9"
+dist: xenial   # required for Python >= 3.7
 
-before_install:
-    - eval "${MATRIX_EVAL}"
-install:
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - export PATH="$HOME/miniconda/bin:$PATH"
-  - hash -r
-  - conda config --set always_yes yes --set changeps1 no
-  - conda update -q conda
-  - conda info -a
-  - conda env create -f environment-doc.yml
-  - source activate pylops-gpu
-  - export OMP_NUM_THREADS=4
-  - python setup.py install
+language: python
+
+python:
+  - "3.7"
+
+os:
+  - linux
 
 script:
-  - pytest pytests/
+  - pip3 install -r requirements-dev.txt
+  - pip3 install .
+  - python3 setup.py test
+
+
