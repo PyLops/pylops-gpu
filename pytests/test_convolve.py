@@ -10,7 +10,7 @@ from pylops.signalprocessing import Convolve1D
 from pylops_gpu.utils.backend import device
 from pylops_gpu.utils import dottest
 from pylops_gpu.signalprocessing import Convolve1D as gConvolve1D
-from pylops_gpu.optimization.leastsquares import cg
+from pylops_gpu.optimization.cg import cg
 
 # filters
 nfilt = (5, 7)

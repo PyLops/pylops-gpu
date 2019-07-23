@@ -1,63 +1,95 @@
 import torch
 
-from pytorch_complex_tensor import ComplexTensor
-from pylops_gpu.utils.complex import divide
-#from pylops_gpu import LinearOperator, aslinearoperator
+from pylops_gpu import Diagonal
+from pylops_gpu.optimization.cg import cg
 
 
-def cg(A, y, x=None, niter=10, tol=1e-10):
-    r"""Conjugate gradient
+def NormalEquationsInversion(Op, Regs, data, Weight=None, dataregs=None,
+                             epsI=0, epsRs=None, x0=None,
+                             returninfo=False, **kwargs_cg):
+    r"""Inversion of normal equations.
 
-    Solve a system of equations given the square operator ``A`` and data ``y``
-    using conjugate gradient iterations.
+    Solve the regularized normal equations for a system of equations
+    given the operator ``Op``, a data weighting operator ``Weight`` and
+    a list of regularization terms ``Regs``
 
     Parameters
     ----------
-    A : :obj:`pylops_gpu.LinearOperator`
-        Operator to invert of size :math:`[N \times N]`
-    y : :obj:`torch.Tensor`
-        Data of size :math:`[N \times 1]`
+    Op : :obj:`pylops_gpu.LinearOperator`
+        Operator to invert
+    Regs : :obj:`list`
+        Regularization operators (``None`` to avoid adding regularization)
+    data : :obj:`torch.Tensor`
+        Data
+    Weight : :obj:`pylops_gpu.LinearOperator`, optional
+        Weight operator
+    dataregs : :obj:`list`, optional
+        Regularization data (must have the same number of elements
+        as ``Regs``)
+    epsI : :obj:`float`, optional
+        Tikhonov damping
+    epsRs : :obj:`list`, optional
+         Regularization dampings (must have the same number of elements
+         as ``Regs``)
     x0 : :obj:`torch.Tensor`, optional
         Initial guess
-    niter : :obj:`int`
-        Number of iterations
-    tol : :obj:`int`
-        Residual norm tolerance
+    returninfo : :obj:`bool`, optional
+        Return info of CG solver
+    **kwargs_cg
+        Arbitrary keyword arguments for
+        :py:func:`pylops_gpu.optimization.leastsquares.cg` solver
 
     Returns
     -------
-    x : :obj:`torch.Tensor`
-        Estimated model
-    iiter : :obj:`torch.Tensor`
-        Max number of iterations model
+    xinv : :obj:`numpy.ndarray`
+        Inverted model.
+
+    Notes
+    -----
+    Refer to :class:`pylops..optimization.leastsquares.NormalEquationsInversion`
+    for implementation details.
 
     """
-    complex_problem = True if isinstance(y, ComplexTensor) else False
-    #if not isinstance(A, LinearOperator):
-    #    A = aslinearoperator(A)
-    if x is None:
-        if complex_problem:
-            x = ComplexTensor(torch.zeros((2 * y.shape[-1], 1),
-                                          dtype=y.dtype)).t()
-        else:
-            x = torch.zeros_like(y)
-    r = y - A.matvec(x)
-    d = r.clone()
-    if complex_problem:
-        d = ComplexTensor(d)
-        kold = torch.sum(r * r)
+    dtype = data.dtype
+
+    # store adjoint
+    OpH = Op.H
+
+    # create dataregs and epsRs if not provided
+    if dataregs is None and Regs is not None:
+        dataregs = [torch.zeros(Op.shape[1], dtype=dtype)] * len(Regs)
+
+    if epsRs is None and Regs is not None:
+        epsRs = [1] * len(Regs)
+
+    # Normal equations
+    if Weight is not None:
+        y_normal = OpH * Weight * data
     else:
-        kold = torch.sum(r * r)
-    iiter = 0
-    while iiter < niter and torch.abs(kold) > tol:
-        Ad = A.matvec(d)
-        dAd = (d*Ad).sum() if complex_problem else torch.sum(d * Ad)
-        a = divide(kold, dAd) if complex_problem else kold / dAd
-        x += a * d
-        r -= a * Ad
-        k = torch.sum(r * r) if complex_problem else torch.sum(r * r)
-        b = k / kold
-        d = r + b * d
-        kold = k
-        iiter += 1
-    return x, iiter
+        y_normal = OpH * data
+    if Weight is not None:
+        Op_normal = OpH * Weight * Op
+    else:
+        Op_normal = OpH * Op
+
+    # Add regularization terms
+    if epsI > 0:
+        Op_normal += epsI ** 2 * Diagonal(torch.ones(Op.shape[1]))
+
+    if Regs is not None:
+        for epsR, Reg, datareg in zip(epsRs, Regs, dataregs):
+            RegH = Reg.H
+            y_normal += epsR ** 2 * RegH * datareg
+            Op_normal += epsR ** 2 * RegH * Reg
+
+    # CG solver
+    if x0 is not None:
+        y_normal = y_normal - Op_normal * x0
+    xinv, istop = cg(Op_normal, y_normal, **kwargs_cg)
+    if x0 is not None:
+        xinv = x0 + xinv
+
+    if returninfo:
+        return xinv, istop
+    else:
+        return xinv

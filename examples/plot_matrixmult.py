@@ -19,9 +19,10 @@ import matplotlib.gridspec as pltgs
 import pylops_gpu
 
 from pylops_gpu.utils.backend import device
-from pylops_gpu.optimization.leastsquares import cg
+from pylops_gpu.optimization.cg import cg
 
 dev = device()
+print('PyLops-gpu working on %s...' % dev)
 plt.close('all')
 
 

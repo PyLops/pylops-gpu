@@ -104,9 +104,10 @@ class Convolve1D(LinearOperator):
                 y[..., :self.nh // 2] = 0
                 y[..., -self.nh // 2 + 1:] = 0
         else:
-            x = torch.reshape(x, self.dims).permute(self.permute)
-            y = torch.torch.conv_transpose1d(x.reshape(self.otherdims_prod, 1,
-                                                       self.dims[self.dir]),
+            x1 = x.clone() # need to clone to avoid modifying x
+            x1 = torch.reshape(x1, self.dims).permute(self.permute)
+            y = torch.torch.conv_transpose1d(x1.reshape(self.otherdims_prod, 1,
+                                                        self.dims[self.dir]),
                                              self.h, padding=self.padding)
             if self.zero_edges:
                 y[..., :self.nh // 2] = 0
@@ -124,12 +125,13 @@ class Convolve1D(LinearOperator):
             y = torch.torch.conv1d(x, self.h, padding=self.padding)
 
         else:
-            x = torch.reshape(x, self.dims).permute(self.permute)
+            x1 = x.clone() # need to clone to avoid modifying x
+            x1 = torch.reshape(x1, self.dims).permute(self.permute)
             if self.zero_edges:
-                x[..., :self.nh // 2] = 0
-                x[..., -self.nh // 2 + 1:] = 0
-            y = torch.torch.conv1d(x.reshape(self.otherdims_prod, 1,
-                                             self.dims[self.dir]),
+                x1[..., :self.nh // 2] = 0
+                x1[..., -self.nh // 2 + 1:] = 0
+            y = torch.torch.conv1d(x1.reshape(self.otherdims_prod, 1,
+                                              self.dims[self.dir]),
                                    self.h, padding=self.padding)
             y = y.reshape(self.dims_permute).permute(self.permute)
         y = y.flatten()

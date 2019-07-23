@@ -7,7 +7,7 @@ from pylops_gpu.utils.backend import device
 from pylops_gpu.utils.complex import *
 from pylops_gpu.utils.torch2numpy import *
 from pylops_gpu import MatrixMult
-from pylops_gpu.optimization.leastsquares import cg
+from pylops_gpu.optimization.cg import cg
 
 
 par1 = {'ny': 7, 'nx': 7, 'imag': 0,

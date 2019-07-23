@@ -73,7 +73,7 @@ def PoststackLinearModelling(wav, nt0, spatdims=None, explicit=False,
     Parameters
     ----------
     wav : :obj:`np.ndarray`
-        Wavelet in time domain (must had odd number of elements
+        Wavelet in time domain (must have odd number of elements
         and centered to zero)
     nt0 : :obj:`int`
         Number of samples along time axis

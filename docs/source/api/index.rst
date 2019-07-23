@@ -28,7 +28,18 @@ Basic operators
 
     MatrixMult
     Diagonal
-    FirstDerivative
+
+
+Smoothing and derivatives
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autosummary::
+   :toctree: generated/
+
+   FirstDerivative
+   SecondDerivative
+   Laplacian
+
 
 Signal processing
 ~~~~~~~~~~~~~~~~~
@@ -44,13 +55,21 @@ Signal processing
 Solvers
 -------
 
-Least-squares
-~~~~~~~~~~~~~
+Low-level solvers
+~~~~~~~~~~~~~~~~~
 
 .. currentmodule:: pylops_gpu.optimization
 
 .. autosummary::
    :toctree: generated/
 
-    leastsquares.cg
+    cg.cg
+
+Least-squares
+~~~~~~~~~~~~~
+
+.. autosummary::
+   :toctree: generated/
+
+    leastsquares.NormalEquationsInversion
 

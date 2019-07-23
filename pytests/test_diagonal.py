@@ -8,7 +8,7 @@ from pylops_gpu.utils import dottest
 from pylops_gpu.utils.backend import device
 from pylops_gpu.utils.complex import *
 from pylops_gpu.basicoperators import Diagonal
-from pylops_gpu.optimization.leastsquares import cg
+from pylops_gpu.optimization.cg import cg
 
 
 par1 = {'ny': 21, 'nx': 11, 'nt': 20, 'imag': 0,

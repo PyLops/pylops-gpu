@@ -1,6 +1,12 @@
-from .LinearOperator import LinearOperator, MatrixMult, aslinearoperator
+from .LinearOperator import LinearOperator
+from .basicoperators import MatrixMult, aslinearoperator
 from .basicoperators import Diagonal
 from .basicoperators import FirstDerivative
+from .basicoperators import SecondDerivative
+from .basicoperators import Laplacian
+
+from .optimization.cg import cg
+from .optimization.leastsquares import NormalEquationsInversion
 
 from . import utils
 from . import basicoperators
