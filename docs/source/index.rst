@@ -56,10 +56,6 @@ and similarly using PyLops-GPU:
 Running these two snippets of code in Google Colab with GPU enabled gives a 50+
 speed up for the forward pass.
 
-At this point, we are not able to install ``pytorch`` on `readthedocs <https://readthedocs.org>`_ due
-to memory limitation. Working examples are temporarely made available
-`here <https://github.com/mrava87/pylops_notebooks/tree/master/developement-cuda>`_.
-
 
 .. toctree::
    :maxdepth: 1
