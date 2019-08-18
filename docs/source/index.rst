@@ -56,6 +56,12 @@ and similarly using PyLops-GPU:
 Running these two snippets of code in Google Colab with GPU enabled gives a 50+
 speed up for the forward pass.
 
+History
+-------
+PyLops-GPU was initially written and it is currently maintained by `Equinor <https://www.equinor.com>`_
+It is an extension of `PyLops <https://pylops.readthedocs.io/en/latest/>`_ for large-scale optimization with
+*GPU*-powered linear operators that can be tailored to our needs, and as contribution to the free software community.
+
 
 .. toctree::
    :maxdepth: 1

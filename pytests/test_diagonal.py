@@ -42,7 +42,7 @@ def test_Diagonal_1dsignal(par):
         else:
             x = complextorch_fromnumpy(x).to(dev)
         xcg = cg(Dop, Dop * x, niter=ddim)[0]
-        assert_array_almost_equal(x.numpy(), xcg.numpy(), decimal=4)
+        assert_array_almost_equal(x.numpy(), xcg.cpu().numpy(), decimal=4)
 
 
 @pytest.mark.parametrize("par", [(par1), (par2)])
@@ -70,4 +70,4 @@ def test_Diagonal_2dsignal(par):
             x = complextorch_fromnumpy(x).to(dev)
         xcg = cg(Dop, Dop * x.flatten(), niter=Dop.shape[0])[0]
         assert_array_almost_equal(x.flatten().numpy(),
-                                  xcg.flatten().numpy(), decimal=4)
+                                  xcg.flatten().cpu().numpy(), decimal=4)

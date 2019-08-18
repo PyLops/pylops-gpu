@@ -33,6 +33,12 @@ def torchtype_from_numpytype(numpytype):
     torchtype : :obj:`torch.dtype`
         Torch equivalent type
 
+    Notes
+    -----
+    Given limitations of torch to handle complex numbers, complex numpy types
+    are casted into equivalent real types and the equivalent torch type is
+    returned.
+
     """
-    torchtype = torch.from_numpy(np.ones(1, dtype=numpytype)).dtype
+    torchtype = torch.from_numpy(np.real(np.ones(1, dtype=numpytype))).dtype
     return torchtype

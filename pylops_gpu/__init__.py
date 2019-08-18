@@ -1,12 +1,13 @@
 from .LinearOperator import LinearOperator
 from .basicoperators import MatrixMult, aslinearoperator
 from .basicoperators import Diagonal
+from .basicoperators import Identity
 from .basicoperators import VStack
 from .basicoperators import FirstDerivative
 from .basicoperators import SecondDerivative
 from .basicoperators import Laplacian
 
-from .optimization.cg import cg
+from .optimization.cg import cg, cgls
 from .optimization.leastsquares import NormalEquationsInversion
 
 from .avo.poststack import PoststackLinearModelling

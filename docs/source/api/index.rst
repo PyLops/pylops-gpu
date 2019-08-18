@@ -28,6 +28,7 @@ Basic operators
    :toctree: generated/
 
     MatrixMult
+    Identity
     Diagonal
     VStack
 
@@ -66,6 +67,7 @@ Low-level solvers
    :toctree: generated/
 
     cg
+    cgls
 
 Least-squares
 ~~~~~~~~~~~~~
