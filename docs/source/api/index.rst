@@ -79,3 +79,16 @@ Least-squares
 
     leastsquares.NormalEquationsInversion
 
+
+Applications
+------------
+
+Geophysical subsurface characterization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. currentmodule:: pylops.avo
+
+.. autosummary::
+   :toctree: generated/
+
+    poststack.PoststackInversion

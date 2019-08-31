@@ -10,16 +10,6 @@ also a number of auxiliary routines.
 Shared
 ------
 
-Dot-test
-~~~~~~~~
-
-.. currentmodule:: pylops_gpu.utils
-
-.. autosummary::
-   :toctree: generated/
-
-    dottest
-
 Backends
 ~~~~~~~~
 
@@ -29,6 +19,17 @@ Backends
    :toctree: generated/
 
     backend.device
+
+
+Dot-test
+~~~~~~~~
+
+.. currentmodule:: pylops_gpu.utils
+
+.. autosummary::
+   :toctree: generated/
+
+    dottest
 
 
 Torch2Numpy
