@@ -17,6 +17,7 @@ Templates
    :toctree: generated/
 
     LinearOperator
+    TorchOperator
 
 
 Basic operators

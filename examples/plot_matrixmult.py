@@ -30,7 +30,6 @@ plt.close('all')
 ###############################################################################
 # Let's define the size ``N`` of thesquare matrix :math:`\mathbf{A}` and
 # fill the matrix with random numbers
-
 N = 20
 A = torch.randn((N, N), dtype=torch.float32).to(dev)
 A = torch.matmul(A.t(), A) # need semi-definite positive matrix for cg

@@ -110,10 +110,10 @@ def cgls(A, y, x=None, niter=10, damp=0., tol=1e-10):
     #    A = aslinearoperator(A)
     if x is None:
         if complex_problem:
-            x = ComplexTensor(torch.zeros((2 * y.shape[-1], 1),
+            x = ComplexTensor(torch.zeros((2 * A.shape[1], 1),
                                           dtype=y.dtype)).t()
         else:
-            x = torch.zeros_like(y)
+            x = torch.zeros(A.shape[1], dtype=y.dtype)
     s = y - A.matvec(x)
     r = A.rmatvec(s) - damp * x
     c = r.clone()

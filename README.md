@@ -88,7 +88,7 @@ pip install git+https://git@github.com/equinor/pylops-gpu.git@master
 Follow the instructions from [PyLops official documentation](https://pylops.readthedocs.io/en/latest/contributing.html).
 
 ## Documentation
-The official documentation of PyLops is available [here](https://pylops-gpu.readthedocs.io/).
+The official documentation of PyLops-gpu is available [here](https://pylops-gpu.readthedocs.io/).
 
 Visit this page to get started learning about different operators and their applications as well as how to
 create new operators yourself and make it to the ``Contributors`` list.

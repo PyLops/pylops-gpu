@@ -1,7 +1,9 @@
 from .LinearOperator import LinearOperator
+from .TorchOperator import TorchOperator
 from .basicoperators import MatrixMult, aslinearoperator
 from .basicoperators import Diagonal
 from .basicoperators import Identity
+from .basicoperators import Restriction
 from .basicoperators import VStack
 from .basicoperators import FirstDerivative
 from .basicoperators import SecondDerivative

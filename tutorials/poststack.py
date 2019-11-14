@@ -56,10 +56,11 @@ wav = torch.from_numpy(wav.astype('float32'))
 
 # dense operator
 PPop_dense = \
-    pylops_gpu.avo.poststack.PoststackLinearModelling(wav, nt0=nt0, explicit=True)
+    pylops_gpu.avo.poststack.PoststackLinearModelling(wav / 2, nt0=nt0,
+                                                      explicit=True)
 
 # lop operator
-PPop = pylops_gpu.avo.poststack.PoststackLinearModelling(wav, nt0=nt0)
+PPop = pylops_gpu.avo.poststack.PoststackLinearModelling(wav / 2, nt0=nt0)
 
 # data
 d_dense = PPop_dense * m.flatten()
@@ -75,19 +76,19 @@ dn_dense = d_dense + \
 
 # solve dense
 minv_dense = \
-    pylops_gpu.avo.poststack.PoststackInversion(d, wav, m0=mback, explicit=True,
+    pylops_gpu.avo.poststack.PoststackInversion(d, wav / 2, m0=mback, explicit=True,
                                                 simultaneous=False)[0]
 
 # solve lop
 minv = \
-    pylops_gpu.avo.poststack.PoststackInversion(d_dense, wav, m0=mback,
+    pylops_gpu.avo.poststack.PoststackInversion(d_dense, wav / 2, m0=mback,
                                                 explicit=False,
                                                 simultaneous=False,
                                                 **dict(niter=500))[0]
 
 # solve noisy
 mn = \
-    pylops_gpu.avo.poststack.PoststackInversion(dn_dense, wav, m0=mback,
+    pylops_gpu.avo.poststack.PoststackInversion(dn_dense, wav / 2, m0=mback,
                                                 explicit=True, epsI=1e-4,
                                                 epsR=1e0, **dict(niter=100))[0]
 
@@ -135,11 +136,11 @@ mback = torch.from_numpy(mback.astype('float32'))
 
 # dense operator
 PPop_dense = \
-    pylops_gpu.avo.poststack.PoststackLinearModelling(wav, nt0=nz,
+    pylops_gpu.avo.poststack.PoststackLinearModelling(wav / 2, nt0=nz,
                                                       spatdims=nx, explicit=True)
 
 # lop operator
-PPop = pylops_gpu.avo.poststack.PoststackLinearModelling(wav, nt0=nz,
+PPop = pylops_gpu.avo.poststack.PoststackLinearModelling(wav / 2, nt0=nz,
                                                          spatdims=nx)
 
 # data
@@ -152,20 +153,21 @@ dn = d + n
 
 # dense inversion with noise-free data
 minv_dense = \
-    pylops_gpu.avo.poststack.PoststackInversion(d, wav, m0=mback,
+    pylops_gpu.avo.poststack.PoststackInversion(d, wav / 2, m0=mback,
                                                 explicit=True,
                                                 simultaneous=False)[0]
 
 # dense inversion with noisy data
 minv_dense_noisy = \
-    pylops_gpu.avo.poststack.PoststackInversion(dn, wav, m0=mback,
+    pylops_gpu.avo.poststack.PoststackInversion(dn, wav / 2, m0=mback,
                                                 explicit=True, epsI=4e-2,
                                                 simultaneous=False)[0]
 
 # spatially regularized lop inversion with noisy data
 minv_lop_reg = \
-    pylops_gpu.avo.poststack.PoststackInversion(dn, wav, m0=minv_dense_noisy,
-                                                explicit=False, epsR=5e1, epsI=1e-2,
+    pylops_gpu.avo.poststack.PoststackInversion(dn, wav / 2, m0=minv_dense_noisy,
+                                                explicit=False,
+                                                epsR=5e1, epsI=1e-2,
                                                 **dict(niter=80))[0]
 
 fig, axs = plt.subplots(2, 4, figsize=(15, 9))

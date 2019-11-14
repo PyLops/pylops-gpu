@@ -91,7 +91,7 @@ def PoststackLinearModelling(wav, nt0, spatdims=None, explicit=False,
                              tocpu=(False, False)):
     r"""Post-stack linearized seismic modelling operator.
 
-    Create operator to be applied to an acoustic impedance trace (or stack of
+    Create operator to be applied to an elastic parameter trace (or stack of
     traces) for generation of band-limited seismic post-stack data. The input
     model and data have shape :math:`[n_{t0} (\times n_x \times n_y)]`.
 
