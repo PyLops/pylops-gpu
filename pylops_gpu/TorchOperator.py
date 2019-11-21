@@ -17,7 +17,7 @@ class _TorchOperator(torch.autograd.Function):
     def forward(ctx, x, forw, adj, pylops):
         ctx.forw = forw
         ctx.adj = adj
-        ctx.pylops = forw
+        ctx.pylops = pylops
 
         if ctx.pylops:
             x = x.detach().numpy()
