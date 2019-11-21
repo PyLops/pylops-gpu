@@ -20,7 +20,7 @@ class _TorchOperator(torch.autograd.Function):
         ctx.pylops = pylops
 
         if ctx.pylops:
-            x = x.detach().numpy()
+            x = x.cpu().detach().numpy()
         y = ctx.forw(x)
         if ctx.pylops:
             y = torch.from_numpy(y)
@@ -29,7 +29,7 @@ class _TorchOperator(torch.autograd.Function):
     @staticmethod
     def backward(ctx, y):
         if ctx.pylops:
-            y = y.detach().numpy()
+            y = y.cpu().detach().numpy()
         x = ctx.adj(y)
         if ctx.pylops:
             x = torch.from_numpy(x)
@@ -62,7 +62,7 @@ class TorchOperator():
 
     """
     def __init__(self, Op, pylops=False):
-        self.pylops = True if isinstance(Op, LinearOperator) else False
+        self.pylops = pylops #True if isinstance(Op, LinearOperator) else False
         self.matvec = Op.matvec
         self.rmatvec = Op.rmatvec
 

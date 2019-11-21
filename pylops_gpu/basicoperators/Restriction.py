@@ -98,12 +98,12 @@ class Restriction(LinearOperator):
     def _rmatvec(self, x):
         if not self.inplace: x = x.copy()
         if not self.reshape:
-            y = torch.zeros(self.dims, dtype=self.dtype)
+            y = torch.zeros(self.dims, dtype=self.dtype).to(self.device)
             y[self.iava] = x
         else:
-            x = np.reshape(x, self.dimsd)
-            y = np.zeros(self.dims, dtype=self.dtype)
-            torch.put_along_axis(y, np.reshape(self.iava, self.iavareshape),
+            x = torch.reshape(x, self.dimsd)
+            y = torch.zeros(self.dims, dtype=self.dtype)
+            torch.put_along_axis(y, torch.reshape(self.iava, self.iavareshape),
                               x, axis=self.dir)
             y = y.view(-1)
         return y
