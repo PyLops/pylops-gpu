@@ -1,10 +1,7 @@
 import torch
 import numpy as np
 
-from pytorch_complex_tensor import ComplexTensor
 from pylops_gpu.LinearOperator import LinearOperator
-from pylops_gpu.utils.complex import conj, reshape, flatten
-from pylops_gpu.utils.torch2numpy import numpytype_from_torchtype
 
 
 class Restriction(LinearOperator):
@@ -86,24 +83,30 @@ class Restriction(LinearOperator):
         self.Op = None
 
     def _matvec(self, x):
-        if not self.inplace: x = x.copy()
+        if not self.inplace:
+            x = x.copy()
         if not self.reshape:
             y = x[self.iava]
         else:
-            x = torch.reshape(x, self.dims)
-            y = torch.take(x, self.iava, axis=self.dir)
-            y = y.view(-1)
+            raise NotImplementedError('Restriction currently works only on '
+                                      '1d arrays')
+        #    x = torch.reshape(x, self.dims)
+        #    y = torch.take(x, self.iava, axis=self.dir)
+        #    y = y.view(-1)
         return y
 
     def _rmatvec(self, x):
-        if not self.inplace: x = x.copy()
+        if not self.inplace:
+            x = x.copy()
         if not self.reshape:
             y = torch.zeros(self.dims, dtype=self.dtype).to(self.device)
             y[self.iava] = x
         else:
-            x = torch.reshape(x, self.dimsd)
-            y = torch.zeros(self.dims, dtype=self.dtype)
-            torch.put_along_axis(y, torch.reshape(self.iava, self.iavareshape),
-                              x, axis=self.dir)
-            y = y.view(-1)
+            raise NotImplementedError('Restriction currently works only on '
+                                      '1d arrays')
+        #    x = torch.reshape(x, self.dimsd)
+        #    y = torch.zeros(self.dims, dtype=self.dtype)
+        #    torch.put_along_axis(y, torch.reshape(self.iava, self.iavareshape),
+        #                         x, axis=self.dir)
+        #    y = y.view(-1)
         return y

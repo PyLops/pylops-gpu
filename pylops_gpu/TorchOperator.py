@@ -1,8 +1,4 @@
 import torch
-import numpy as np
-
-from pylops import LinearOperator
-from pylops_gpu import LinearOperator as gLinearOperator
 
 
 class _TorchOperator(torch.autograd.Function):
@@ -62,7 +58,7 @@ class TorchOperator():
 
     """
     def __init__(self, Op, pylops=False):
-        self.pylops = pylops #True if isinstance(Op, LinearOperator) else False
+        self.pylops = pylops
         self.matvec = Op.matvec
         self.rmatvec = Op.rmatvec
 
