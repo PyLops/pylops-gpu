@@ -58,6 +58,15 @@ y = Dop*x
 Running these two snippets of code in Google Colab with GPU enabled gives a 50+
 speed up for the forward pass.
 
+As a by-product of implementing PyLops linear operators in PyTorch, we can easily
+chain our operators with any nonlinear mathematical operation (e.g., log, sin, tan, pow, ...)
+as well as with operators from the ``torch.nn`` submodule and obtain *Automatic
+Differentiation* (AD) for the entire chain. Since the gradient of a linear
+operator is simply its *adjoint*, we have implemented a single class,
+`pylops_gpu.TorchOperator`, which can wrap any linear operator
+from PyLops and PyLops-gpu libraries and return a `torch.autograd.Function` object.
+
+
 ## Project structure
 This repository is organized as follows:
 * **pylops_gpu**: python library containing various GPU-powered linear operators and auxiliary routines

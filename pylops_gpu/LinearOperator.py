@@ -58,6 +58,22 @@ class LinearOperator(pLinearOperator):
         self.tocpu = tocpu
 
     def matvec(self, x):
+        r"""Matrix-vector multiplication.
+
+        Performs the operation ``y = A * x`` where A is an :math:`N \times M`
+        linear operator and ``x`` is a 1-d array.
+
+        Parameters
+        ----------
+        x : :obj:`torch.Tensor`
+            An array with shape (M,)
+
+        Returns
+        -------
+        y : :obj:`torch.Tensor`
+            An array with shape (N,)
+
+        """
         # convert x to torch.Tensor
         if not isinstance(x, torch.Tensor):
             _tonumpy = True
@@ -79,6 +95,22 @@ class LinearOperator(pLinearOperator):
         return y
 
     def rmatvec(self, x):
+        """Adjoint matrix-vector multiplication.
+
+        Performs the operation ``y = A^H * x`` where A is an
+        :math:`N \times M` linear operator and ``x`` is a 1-d array.
+
+        Parameters
+        ----------
+        x : :obj:`torch.Tensor`
+            An array with shape (N,)
+
+        Returns
+        -------
+        y : :obj:`torch.Tensor`
+            An array with shape (M,)
+
+        """
         # convert x to torch.Tensor
         if not isinstance(x, torch.Tensor):
             _tonumpy = True
@@ -99,8 +131,112 @@ class LinearOperator(pLinearOperator):
             y = y.numpy()
         return y
 
+    def matmat(self, X, kfirst=False):
+        """Matrix-matrix multiplication.
+
+        Performs the operation ``Y = A * X`` where A is an
+        :math:`N \times M` linear operator and ``X`` is a 2-d array of size
+        :math:`K \times M` (``kfirst=True``) or :math:`M \times K`
+        (``kfirst=False``).
+
+        Parameters
+        ----------
+        x : :obj:`torch.Tensor`
+            An array with shape (M, K) or (K, M)
+        kfirst : :obj:`bool`, optional
+            Dimension ``K`` along which the matrix multiplication is performed
+            is in the first dimension (``True``) or in the second dimension
+            (``False``)
+
+        Returns
+        -------
+        y : :obj:`torch.Tensor`
+            An array with shape (N, K) or (K, N)
+
+        """
+        # convert x to torch.Tensor
+        if not isinstance(X, torch.Tensor):
+            _tonumpy = True
+            X = torch.from_numpy(X)
+        else:
+            _tonumpy = False
+        # matmat, possibly moving x to gpu and y back to cpu
+        if self.device != 'cpu' and self.togpu[0]:
+            X = X.to(self.device)
+        if self.Op is None:
+            Y = self._matmat(X, kfirst=kfirst)
+        else:
+            Y = self.Op._matmat(X, kfirst=kfirst)
+        if self.device != 'cpu' and self.tocpu[0]:
+            Y = Y.to('cpu')
+        # convert y to numpy when input was numpy
+        if _tonumpy:
+            Y = Y.numpy()
+        return Y
+
+    def rmatmat(self, X, kfirst=False):
+        """Adjoint matrix-matrix multiplication.
+
+        Performs the operation ``Y = A^H * X`` where A is an
+        :math:`N \times M` linear operator and ``X`` is a 2-d array of size
+        :math:`K \times N` (``kfirst=True``) or :math:`N \times K`
+        (``kfirst=False``).
+
+        Parameters
+        ----------
+        x : :obj:`torch.Tensor`
+            An array with shape (N, K) or (K, N)
+        kfirst : :obj:`bool`, optional
+            Dimension ``K`` along which the matrix multiplication is performed
+            is in the first dimension (``True``) or in the second dimension
+            (``False``)
+
+        Returns
+        -------
+        y : :obj:`torch.Tensor`
+            An array with shape (M, K) or (K, M)
+
+        """
+        # convert x to torch.Tensor
+        if not isinstance(X, torch.Tensor):
+            _tonumpy = True
+            X = torch.from_numpy(X)
+        else:
+            _tonumpy = False
+        # matmat, possibly moving x to gpu and y back to cpu
+        if self.device != 'cpu' and self.togpu[0]:
+            X = X.to(self.device)
+        if self.Op is None:
+            Y = self._rmatmat(X, kfirst=kfirst)
+        else:
+            Y = self.Op._rmatmat(X, kfirst=kfirst)
+        if self.device != 'cpu' and self.tocpu[0]:
+            Y = Y.to('cpu')
+        # convert y to numpy when input was numpy
+        if _tonumpy:
+            Y = Y.numpy()
+        return Y
+
     def __call__(self, x):
         return self * x
+
+    def _matmat(self, X, kfirst=False):
+        """Matrix-matrix multiplication handler.
+        """
+        if kfirst:
+            Y = torch.stack([self._matvec(col.view(-1)) for col in X], dim=0)
+        else:
+            Y = torch.stack([self._matvec(col.view(-1)) for col in X.T], dim=0).T
+        return Y
+
+    def _rmatmat(self, X, kfirst=False):
+        """Adjoint Matrix-matrix multiplication handler.
+        """
+        if kfirst:
+            Y = torch.stack([self._rmatvec(col.view(-1)) for col in X], dim=0)
+        else:
+            Y = torch.stack([self._rmatvec(col.view(-1)) for col in X.T], dim=0).T
+        return Y
 
     def __mul__(self, x):
         return self.dot(x)

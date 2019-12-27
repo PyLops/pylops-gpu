@@ -33,7 +33,7 @@ class _TorchOperator(torch.autograd.Function):
 
 
 class TorchOperator():
-    """Wrap pylops operator into Torch function
+    """Wrap a PyLops operator into a Torch function.
 
     This class can be used to wrap a pylops (or pylops-gpu) operator into a
     torch function. Doing so, users can mix native torch functions (e.g.
@@ -48,19 +48,29 @@ class TorchOperator():
     ----------
     Op : :obj:`pylops_gpu.LinearOperator` or :obj:`pylops.LinearOperator`
         PyLops operator
+    batch : :obj:`bool`, optional
+        Input will have single sample (``False``) or batch of samples
+        operator (``True``). If ``batch==False`` the input must be a 1-d Torch
+        tensor, if `batch==False`` the input must be a 2-d Torch tensor with
+        batches along the first dimension
     pylops : :obj:`bool`, optional
         ``Op`` is a pylops operator (``True``) or a pylops-gpu
         operator (``False``)
+
     Returns
     -------
     y : :obj:`torch.Tensor`
-        Output array resulting from the application of the operator to ``x`
+        Output array resulting from the application of the operator to ``x``.
 
     """
-    def __init__(self, Op, pylops=False):
+    def __init__(self, Op, batch=False, pylops=False):
         self.pylops = pylops
-        self.matvec = Op.matvec
-        self.rmatvec = Op.rmatvec
+        if not batch:
+            self.matvec = Op.matvec
+            self.rmatvec = Op.rmatvec
+        else:
+            self.matvec = lambda x: Op.matmat(x, kfirst=True)
+            self.rmatvec = lambda x: Op.rmatmat(x, kfirst=True)
 
     def apply(self, x):
         """Apply forward pass to input vector
@@ -73,8 +83,7 @@ class TorchOperator():
         Returns
         -------
         y : :obj:`torch.Tensor`
-            Output array resulting from the application of the operator to ``x`
+            Output array resulting from the application of the operator to ``x``.
 
         """
-        y = _TorchOperator.apply(x, self.matvec, self.rmatvec, self.pylops)
-        return y
+        return _TorchOperator.apply(x, self.matvec, self.rmatvec, self.pylops)

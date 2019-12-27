@@ -24,7 +24,7 @@ torch.manual_seed(10)
 ###############################################################################
 # We consider the 1d example. A synthetic profile of acoustic impedance
 # is created and data is modelled using both the dense and linear operator
-# version of :py:class:`pylops_distributed.avo.poststack.PoststackLinearModelling`
+# version of :py:class:`pylops_gpu.avo.poststack.PoststackLinearModelling`
 # operator. Both model and wavelet are created as numpy arrays and converted
 # into torch tensors (note that we enforce ``float32`` for optimal performance
 # on GPU).

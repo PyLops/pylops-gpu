@@ -10,11 +10,9 @@ to run operators on GPUs.
 
 As much as `numpy <http://www.numpy.org>`_ and
 `scipy <http://www.scipy.org/scipylib/index.html>`_ lie at the core of the parent project
-PyLops, PyLops-GPU heavily builds on top of
-`PyTorch <http://pytorch.org>`_ and takes advantage of the same optimized
-tensor computations used in PyTorch for deep learning using GPUs and CPUs.
-
-Doing so, linear operators can be computed on GPUs.
+PyLops, PyLops-GPU heavily builds on top of `PyTorch <http://pytorch.org>`_
+and takes advantage of the same optimized tensor computations used in PyTorch
+for deep learning using GPUs and CPUs. Doing so, linear operators can be computed on GPUs.
 
 Here is a simple example showing how a diagonal operator can be created,
 applied and inverted using PyLops:
@@ -55,6 +53,15 @@ and similarly using PyLops-GPU:
 
 Running these two snippets of code in Google Colab with GPU enabled gives a 50+
 speed up for the forward pass.
+
+As a by-product of implementing PyLops linear operators in PyTorch, we can easily
+chain our operators with any nonlinear mathematical operation (e.g., log, sin, tan, pow, ...)
+as well as with operators from the ``torch.nn`` submodule and obtain *Automatic
+Differentiation* (AD) for the entire chain. Since the gradient of a linear
+operator is simply its *adjoint*, we have implemented a single class,
+:py:class:`pylops_gpu.TorchOperator`, which can wrap any linear operator
+from PyLops and PyLops-gpu libraries and return a :py:class:`torch.autograd.Function` object.
+
 
 History
 -------
