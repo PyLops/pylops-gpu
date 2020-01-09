@@ -1,5 +1,5 @@
 r"""
-01. Post-stack inversion
+02. Post-stack inversion
 ========================
 This tutorial focuses on extending post-stack seismic inversion to GPU
 processing. We refer to the equivalent `PyLops tutorial <https://pylops.readthedocs.io/en/latest/tutorials/poststack.html>`_

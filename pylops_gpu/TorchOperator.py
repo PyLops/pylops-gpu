@@ -10,16 +10,17 @@ class _TorchOperator(torch.autograd.Function):
 
     """
     @staticmethod
-    def forward(ctx, x, forw, adj, pylops):
+    def forward(ctx, x, forw, adj, pylops, device):
         ctx.forw = forw
         ctx.adj = adj
         ctx.pylops = pylops
+        ctx.device = device
 
         if ctx.pylops:
             x = x.cpu().detach().numpy()
         y = ctx.forw(x)
         if ctx.pylops:
-            y = torch.from_numpy(y)
+            y = torch.from_numpy(y).to(ctx.device)
         return y
 
     @staticmethod
@@ -28,8 +29,8 @@ class _TorchOperator(torch.autograd.Function):
             y = y.cpu().detach().numpy()
         x = ctx.adj(y)
         if ctx.pylops:
-            x = torch.from_numpy(x)
-        return  x, None, None, None
+            x = torch.from_numpy(x).to(cxt.device)
+        return  x, None, None, None, None
 
 
 class TorchOperator():
@@ -56,6 +57,8 @@ class TorchOperator():
     pylops : :obj:`bool`, optional
         ``Op`` is a pylops operator (``True``) or a pylops-gpu
         operator (``False``)
+    device : :obj:`str`, optional
+        Device to be used for output vectors when ``Op`` is a pylops operator
 
     Returns
     -------
@@ -63,8 +66,9 @@ class TorchOperator():
         Output array resulting from the application of the operator to ``x``.
 
     """
-    def __init__(self, Op, batch=False, pylops=False):
+    def __init__(self, Op, batch=False, pylops=False, device='cpu'):
         self.pylops = pylops
+        self.device = device
         if not batch:
             self.matvec = Op.matvec
             self.rmatvec = Op.rmatvec
@@ -86,4 +90,5 @@ class TorchOperator():
             Output array resulting from the application of the operator to ``x``.
 
         """
-        return _TorchOperator.apply(x, self.matvec, self.rmatvec, self.pylops)
+        return _TorchOperator.apply(x, self.matvec, self.rmatvec,
+                                    self.pylops, self.device)
