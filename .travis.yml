@@ -13,4 +13,14 @@ script:
   - pip3 install .
   - python3 setup.py test
 
-
+deploy:
+  provider: pypi
+  user: mrava87
+  distributions: "bdist_wheel"
+  skip_existing: true
+  skip_upload_docs: true
+  skip_cleanup: true
+  on:
+    tags: true
+  password:
+    secure: BhGrKUGz72ruUgoO08vnhaeaOFifln1qbgICR0F4uP9Zu6EVLKgJWxGRsr9Cn/O7bCHlhh/xNULqt7Al3sPeMy8SptxQw/fx5BoiEKqvETbs1zIxQ7JiyCF3Bc5ljl8DUa0TSsqtRXlc2w7lhei7cS9GFZTzrVYJo9yrA3ywkq79LZzgehtsir2oNgya4ONFuKIZ0ebiRlgOA+WXwgaNO77mdZv7+u4dl0V/OGXhJGd1Crn8BW8dT1v4XHrBOzrLXU7uwpSTU47Sn1989fE0xqzo2DNXSh90rKz9xHeC+j/yxw1y4QzTLa/BxsjfS3M/dm1D/9XZp0i8E+/JfYJ/KaxGum8W4ASrnk1x6vdPWS+xe140YEdB8l/cKwRbhqpYFxaXjJNKqHvY5aKInVJLa5zJsdQeicO76XUkG9Gc/nTG7jqkPxWBZqd4ukXN69iwGechpi5DOULUN0Z2Fut9ZzF+nF1aUzEl104uZmRzb682+bhC+dUFPjg7Gi8C+ZRO89gEp1tA/2sA+3svOfxjaBUZDtjSlbg0pj+9llHx6H0tjpsQBIuy6TZshh7qnKVYE3LDAHm08mhAwpDaG7TFkRBkcAJObK73IZ6pam3cw30/51uNvu8k8UwV7noieaejKfCMImGrV3T3UJX/kxFgbH5gHZ3A+280P5yoduwSbkY=
