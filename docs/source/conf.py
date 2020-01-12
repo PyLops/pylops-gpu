@@ -5,7 +5,7 @@ import datetime
 import sphinx_rtd_theme
 import sphinx_gallery
 from sphinx_gallery.sorting import ExampleTitleSortKey
-from pkg_resources import get_distribution
+from pylops_gpu import __version__
 
 # Sphinx needs to be able to import the package to use autodoc and get the version number
 sys.path.insert(0, os.path.abspath('../../pylops_gpu'))
@@ -94,7 +94,7 @@ project = 'PyLops-GPU'
 copyright = '{}, Matteo Ravasi'.format(year)
 
 # Version
-version = '0.0.0' #get_distribution('pylops_gpu').version
+version = __version__
 if len(version.split('+')) > 1 or version == 'unknown':
     version = 'dev'
 
