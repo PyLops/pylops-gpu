@@ -29,7 +29,7 @@ class _TorchOperator(torch.autograd.Function):
             y = y.cpu().detach().numpy()
         x = ctx.adj(y)
         if ctx.pylops:
-            x = torch.from_numpy(x).to(cxt.device)
+            x = torch.from_numpy(x).to(ctx.device)
         return  x, None, None, None, None
 
 
