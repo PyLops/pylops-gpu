@@ -1,5 +1,6 @@
 ![PyLops-gpu](https://github.com/equinor/pylops-gpu/blob/master/docs/source/_static/g-pylops_b.png)
 
+[![PyPI version](https://badge.fury.io/py/pylops-gpu.svg)](https://badge.fury.io/py/pylops-gpu)
 [![Build Status](https://travis-ci.org/equinor/pylops-gpu.svg?branch=master)](https://travis-ci.org/equinor/pylops-gpu)
 [![AzureDevOps Status](https://dev.azure.com/MRAVA/PyLops/_apis/build/status/equinor.pylops-gpu?branchName=master)](https://dev.azure.com/MRAVA/PyLops/_build/latest?definitionId=2&branchName=master)
 [![Documentation Status](https://readthedocs.org/projects/pylops-gpu/badge/?version=latest)](https://pylops-gpu.readthedocs.io/en/latest/?badge=latest)

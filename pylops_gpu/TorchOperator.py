@@ -50,9 +50,9 @@ class TorchOperator():
     Op : :obj:`pylops_gpu.LinearOperator` or :obj:`pylops.LinearOperator`
         PyLops operator
     batch : :obj:`bool`, optional
-        Input will have single sample (``False``) or batch of samples
-        operator (``True``). If ``batch==False`` the input must be a 1-d Torch
-        tensor, if `batch==False`` the input must be a 2-d Torch tensor with
+        Input has single sample (``False``) or batch of samples (``True``).
+        If ``batch==False`` the input must be a 1-d Torch tensor,
+        if `batch==False`` the input must be a 2-d Torch tensor with
         batches along the first dimension
     pylops : :obj:`bool`, optional
         ``Op`` is a pylops operator (``True``) or a pylops-gpu
