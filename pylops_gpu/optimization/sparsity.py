@@ -5,7 +5,7 @@ from pylops_gpu.optimization.leastsquares import NormalEquationsInversion
 
 
 def FISTA(Op, data, niter, eps=0.1, alpha=None, eigsiter=None, eigstol=0,
-          tol=1e-10, show=False, device='cpu'):
+          tol=1e-10, returninfo=False, show=False, device='cpu'):
     r"""Fast Iterative Soft Thresholding Algorithm (FISTA).
 
     Solve an optimization problem with :math:`L1` regularization function given
@@ -34,6 +34,8 @@ def FISTA(Op, data, niter, eps=0.1, alpha=None, eigsiter=None, eigstol=0,
     tol : :obj:`float`, optional
         Tolerance. Stop iterations if difference between inverted model
         at subsequent iterations is smaller than ``tol``
+    returninfo : :obj:`bool`, optional
+        Return info of FISTA solver
     show : :obj:`bool`, optional
         Display iterations log
     device : :obj:`str`, optional
@@ -79,8 +81,8 @@ def FISTA(Op, data, niter, eps=0.1, alpha=None, eigsiter=None, eigstol=0,
     def _softthreshold(x, thresh):
         return torch.max(x.abs() - thresh, torch.zeros_like(x)) * x.sign()
     
-    tstart = time()
     if show:
+        tstart = time()
         print('FISTA optimization\n'
               '-----------------------------------------------------------\n'
               'The Operator Op has %d rows and %d cols\n'
@@ -96,21 +98,22 @@ def FISTA(Op, data, niter, eps=0.1, alpha=None, eigsiter=None, eigstol=0,
     
     #    # define threshold
     thresh = torch.tensor([eps * alpha * 0.5], device=device, dtype=dtype)
-    
+
     if show:
         print('alpha = %10e\tthresh = %10e' % (alpha, thresh))
         print('-----------------------------------------------------------\n')
-        template = '{0:8}{1:10}{2:10}{3:10}{4:10}{5:10}'
-        print(template.format('   Itn', '    x[0]', '    Cost', '     DF', '   RegL1', '  xupdate'))
+        head1 = '   Itn       x[0]        r2norm     r12norm     xupdate'
+        print(head1)
+
+    if returninfo:
+        cost = np.zeros(niter+1)
+        costdata = np.zeros(niter+1)
+        costreg = np.zeros(niter+1)
     
     # initialize model and cost function
     xinv = torch.zeros(Op.shape[1], dtype=dtype, device=device)
-    costdata_list = []
-    costreg_list = []
-    cost_list = []
-    
     zinv = xinv.clone()
-    t = torch.tensor(1.)
+    t = torch.tensor(1.).to(device)
     
     # iterate
     for iiter in range(niter):
@@ -134,37 +137,30 @@ def FISTA(Op, data, niter, eps=0.1, alpha=None, eigsiter=None, eigstol=0,
         # model update
         xupdate = torch.norm(xinv - xinvold)
         
-        costdata = 0.5 * torch.norm(data - Op.matvec(xinv)) ** 2
-        costreg = torch.norm(xinv, p=1)
-        cost = costdata + eps * costreg
-        costdata_list += [costdata.cpu().numpy()]
-        costreg_list += [costreg.cpu().numpy()]
-        cost_list += [cost.cpu().numpy()]
-        
+        if returninfo or show:
+            costdata[iiter] = (0.5 * torch.norm(data - Op.matvec(xinv)) ** 2).item()
+            costreg[iiter] = (torch.norm(xinv, p=1)).item()
+            cost[iiter] = costdata[iiter] + eps * costreg[iiter]
+
         if show:
             if iiter < 10 or niter - iiter < 10 or iiter % 10 == 0:
-                print(template.format('%5d' % (iiter + 1),
-                                      '%10.2e' % xinv[0].cpu().numpy(),
-                                      '%10.2e' % cost_list[-1],
-                                      '%10.2e' % costdata_list[-1],
-                                      '%10.2e' % costreg_list[-1],
-                                      '%10.2e' % xupdate.cpu().numpy()))
-        
+                msg = '%6g  %12.5e  %10.3e   %9.3e  %10.3e' % \
+                      (iiter + 1, xinv[0], costdata[iiter], cost[iiter], xupdate.item())
+                print(msg)
+
         # check tolerance
         if xupdate < tol:
             niter = iiter
             break
-    
+
     if show:
         print('\nIterations = %d        Total time (s) = %.2f'
               % (niter, time() - tstart))
         print('---------------------------------------------------------\n')
-    
-    return xinv,\
-           niter,\
-           np.asarray(cost_list),\
-           np.asarray(costdata_list),\
-           np.asarray(costreg_list)
+    if returninfo:
+        return xinv, niter, cost[:niter], costdata[:niter], costreg[:niter]
+    else:
+        return xinv, niter
 
 
 def SplitBregman(Op, RegsL1, data, niter_outer=3, niter_inner=5, RegsL2=None,
@@ -228,14 +224,6 @@ def SplitBregman(Op, RegsL1, data, niter_outer=3, niter_inner=5, RegsL2=None,
         Inverted model
     itn_out : :obj:`int`
         Iteration number of outer loop upon termination
-    cost : :obj:`numpy.ndarray`, optional
-        History of cost function
-    costdata : :obj:`numpy.ndarray`, optional
-        History of data fidelity term in the cost function
-    costregL1 : :obj:`numpy.ndarray`, optional
-        History of L1 regularizers term in the cost function
-    costregL2 : :obj:`numpy.ndarray`, optional
-        History of L2 regularizers term in the cost function
 
     Notes
     -----
@@ -277,9 +265,8 @@ def SplitBregman(Op, RegsL1, data, niter_outer=3, niter_inner=5, RegsL2=None,
         xabs = torch.abs(x)
         return x / (xabs + 1e-10) * torch.max(xabs - thresh, torch.zeros_like(x))
     
-    tstart = time()
-    
     if show:
+        tstart = time()
         print('Split-Bregman optimization\n'
               '---------------------------------------------------------\n'
               'The Operator Op has %d rows and %d cols\n'
@@ -289,13 +276,8 @@ def SplitBregman(Op, RegsL1, data, niter_outer=3, niter_inner=5, RegsL2=None,
                  niter_outer, niter_inner, tol,
                  mu, str(epsRL1s), str(epsRL2s)))
         print('---------------------------------------------------------\n')
-        head1 = '   Itn          x[0]           DF              Cost'
+        head1 = '   Itn          x[0]           r2norm          r12norm'
         print(head1)
-    
-    costdata_list = []
-    costregL1_list = []
-    costregL2_list = []
-    cost_list = []
     
     # L1 regularizations
     nregsL1 = len(RegsL1)
@@ -342,33 +324,22 @@ def SplitBregman(Op, RegsL1, data, niter_outer=3, niter_inner=5, RegsL2=None,
         # Bregman update
         b = [b[ireg] + tau * (RegsL1[ireg] * xinv - d[ireg]) for ireg in range(nregsL1)]
         itn_out += 1
-        
-        costdata = mu / 2. * torch.norm(data - Op.matvec(xinv)).cpu().numpy() ** 2
-        costregL2 = 0 if RegsL2 is None else \
-            [epsRL2 * np.linalg.norm(dataregL2 - RegL2.matvec(xinv)) ** 2
-             for epsRL2, RegL2, dataregL2 in zip(epsRL2s, RegsL2, dataregsL2)]
-        costregL1 = [epsRL1 * torch.norm(RegL1.matvec(xinv), p=1).cpu().numpy()
-                     for epsRL1, RegL1 in zip(epsRL1s, RegsL1)]
-        cost = costdata + np.sum(np.array(costregL2)) + np.sum(np.array(costregL1))
-        
+
         if show:
+            costdata = mu / 2. * torch.norm(data - Op.matvec(xinv)).cpu().numpy() ** 2
+            costregL2 = 0 if RegsL2 is None else \
+                [epsRL2 * np.linalg.norm(dataregL2 - RegL2.matvec(xinv)) ** 2
+                 for epsRL2, RegL2, dataregL2 in zip(epsRL2s, RegsL2, dataregsL2)]
+            costregL1 = [epsRL1 * torch.norm(RegL1.matvec(xinv), p=1).cpu().numpy()
+                         for epsRL1, RegL1 in zip(epsRL1s, RegsL1)]
+            cost = costdata + np.sum(np.array(costregL2)) + np.sum(np.array(costregL1))
             msg = '%6g  %12.5e       %10.3e        %9.3e' % \
                   (np.abs(itn_out), xinv[0], costdata, cost)
             print(msg)
-        
-        costdata_list += [costdata]
-        costregL1_list += [costregL1]
-        costregL2_list += [costregL2]
-        cost_list += [cost]
-    
+
     if show:
         print('\nIterations = %d        Total time (s) = %.2f'
               % (itn_out, time() - tstart))
         print('---------------------------------------------------------\n')
     
-    return xinv, \
-           itn_out, \
-           np.asarray(cost_list), \
-           np.asarray(costdata_list), \
-           np.asarray(costregL1_list), \
-           np.asarray(costregL2_list)
+    return xinv, itn_out

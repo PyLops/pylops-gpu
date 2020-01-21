@@ -75,26 +75,6 @@ plt.title('L2 inversion')
 plt.show()
 
 ###############################################################################
-# Now we impose sparsity in the solution using the FISTA solver
-xinv, _, _, _, _ = pylops_gpu.FISTA(
-    Op=Iop,
-    data=y,
-    niter=1000,
-    eps=5,
-    alpha=1. / (nx + 1 + 1e-6),
-    tol=1e-10,
-    show=False,
-    device=dev
-)
-plt.figure(figsize=(6, 3))
-plt.plot(x.cpu(), 'k', lw=3, label='x')
-plt.plot(y.cpu(), '.k', label='y=x+n')
-plt.plot(xinv.cpu(), 'r', lw=5, label='xinv')
-plt.legend()
-plt.title('L1 inversion')
-plt.show()
-
-###############################################################################
 # Now we impose blockiness in the solution using the Split Bregman solver
 Dop = pylops_gpu.FirstDerivative(nx, device=dev, dtype=dtype)
 mu = 0.01
