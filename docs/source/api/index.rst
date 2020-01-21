@@ -80,6 +80,15 @@ Least-squares
 
     leastsquares.NormalEquationsInversion
 
+Sparsity
+~~~~~~~~
+
+.. autosummary::
+   :toctree: generated/
+
+    sparsity.FISTA
+    sparsity.SplitBregman
+
 
 Applications
 ------------
