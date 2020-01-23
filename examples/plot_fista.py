@@ -48,10 +48,9 @@ y = Aop * x
 # FISTA
 eps = 0.5
 maxit = 1000
-alpha = 1. / np.linalg.eig(A.T @ A)[0][0] # 1 / max(eig(A.T * A))
-x_fista = \
-    pylops_gpu.optimization.sparsity.FISTA(Aop, y, maxit, eps=eps,
-                                           alpha=alpha, tol=0)[0]
+# alpha = 1. / np.linalg.eig(A.T @ A)[0][0] # 1 / max(eig(A.T * A))  # 0.0175749
+x_fista = pylops_gpu.optimization.sparsity.FISTA(Aop, y, maxit, eps=eps,
+                                                alpha=None, tol=1e-10)[0]
 
 fig, ax = plt.subplots(1, 1, figsize=(8, 3))
 ax.stem(x, linefmt='k', basefmt='k',

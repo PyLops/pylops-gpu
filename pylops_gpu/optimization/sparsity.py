@@ -4,7 +4,7 @@ from time import time
 from pylops_gpu.optimization.leastsquares import NormalEquationsInversion
 
 
-def FISTA(Op, data, niter, eps=0.1, alpha=None, eigsiter=None, eigstol=0,
+def FISTA(Op, data, niter, eps=0.1, alpha=None, eigsiter=100000, eigstol=0,
           tol=1e-10, returninfo=False, show=False, device='cpu'):
     r"""Fast Iterative Soft Thresholding Algorithm (FISTA).
 
@@ -91,10 +91,23 @@ def FISTA(Op, data, niter, eps=0.1, alpha=None, eigsiter=None, eigstol=0,
                                                       eps, tol, niter))
     # step size
     if alpha is None:
-        # TODO compute the max eigenvalue with Torch
-        #  add a PowerMethod to Operator
-        raise NotImplementedError('PowerMethod not implemented yet.'
-                                  'Please insert an alpha!')
+        Op1 = Op.H * Op if Op.shape[0] != Op.shape[1] else Op
+        x = torch.rand(Op1.shape[1]).type(dtype).to(device)
+        x / x.norm()
+        maxeig_old = torch.tensor(0.).type(dtype).to(device)
+        
+        for _ in range(eigsiter):
+            y = Op1 * x
+            maxeig = torch.abs(x.dot(y))
+            x = y.clone()
+            x /= x.norm()
+            
+            if maxeig - maxeig_old < eigstol * maxeig_old:
+                break
+            maxeig_old = maxeig.clone()
+        
+        alpha = 1. / maxeig
+        del x, y, Op1, maxeig, maxeig_old
     
     #    # define threshold
     thresh = torch.tensor([eps * alpha * 0.5], device=device, dtype=dtype)
