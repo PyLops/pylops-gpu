@@ -11,6 +11,7 @@ from .basicoperators import Laplacian
 
 from .optimization.cg import cg, cgls
 from .optimization.leastsquares import NormalEquationsInversion
+from .optimization.sparsity import FISTA, SplitBregman
 
 from .avo.poststack import PoststackLinearModelling
 

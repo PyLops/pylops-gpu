@@ -126,3 +126,4 @@ It is an extension of [PyLops](https://pylops.readthedocs.io/en/latest/) for lar
 
 ## Contributors
 * Matteo Ravasi, mrava87
+* Francesco Picetti, fpicetti
