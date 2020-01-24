@@ -4,7 +4,53 @@ from time import time
 from pylops_gpu.optimization.leastsquares import NormalEquationsInversion
 
 
-def FISTA(Op, data, niter, eps=0.1, alpha=None, eigsiter=100000, eigstol=0,
+def _power_iteration(Op, niter=10, tol=1e-5,
+                     dtype=torch.float32, device='cpu'):
+    """Power iteration algorithm.
+
+    Power iteration algorithm, used to compute the largest eigenvalue and
+    corresponding eigenvector. This implementation closely follow that of
+    https://en.wikipedia.org/wiki/Power_iteration.
+    Parameters
+    ----------
+    Op : :obj:`pylops_gpu.LinearOperator`
+        Operator
+    niter : :obj:`int`, optional
+        Number of iterations
+    tol : :obj:`float`, optional
+        Update tolerance
+    dtype : :obj:`torch.dtype`, optional
+        Type of elements in input array.
+    device : :obj:`str`, optional
+        Device to be used
+
+    Returns
+    -------
+    maxeig : :obj:`int`
+        Largest eigenvalue
+    iiter : :obj:`int`
+        Effective number of iterations
+
+    """
+    # Choose a random vector decrease the chance that vector
+    # is orthogonal to the eigenvector
+    x = torch.rand(Op.shape[1]).type(dtype).to(device)
+    x /= x.norm()
+    maxeig_old = torch.tensor(0.).type(dtype).to(device)
+
+    for iiter in range(niter):
+        y = Op.matvec(x)
+        maxeig = torch.abs(x.dot(y))
+        x = y.clone()
+        x /= x.norm()
+
+        if torch.abs(maxeig - maxeig_old) < tol * maxeig_old:
+            break
+        maxeig_old = maxeig.clone()
+    return maxeig, iiter + 1
+
+
+def FISTA(Op, data, niter, eps=0.1, alpha=None, eigsiter=1000, eigstol=0,
           tol=1e-10, returninfo=False, show=False, device='cpu'):
     r"""Fast Iterative Soft Thresholding Algorithm (FISTA).
 
@@ -77,10 +123,10 @@ def FISTA(Op, data, niter, eps=0.1, alpha=None, eigsiter=100000, eigstol=0,
 
     """
     dtype = data.dtype
-    
+
     def _softthreshold(x, thresh):
         return torch.max(x.abs() - thresh, torch.zeros_like(x)) * x.sign()
-    
+
     if show:
         tstart = time()
         print('FISTA optimization\n'
@@ -91,25 +137,13 @@ def FISTA(Op, data, niter, eps=0.1, alpha=None, eigsiter=100000, eigstol=0,
                                                       eps, tol, niter))
     # step size
     if alpha is None:
-        Op1 = Op.H * Op if Op.shape[0] != Op.shape[1] else Op
-        x = torch.rand(Op1.shape[1]).type(dtype).to(device)
-        x / x.norm()
-        maxeig_old = torch.tensor(0.).type(dtype).to(device)
-        
-        for _ in range(eigsiter):
-            y = Op1 * x
-            maxeig = torch.abs(x.dot(y))
-            x = y.clone()
-            x /= x.norm()
-            
-            if maxeig - maxeig_old < eigstol * maxeig_old:
-                break
-            maxeig_old = maxeig.clone()
-        
+        # compute largest eigenvalues of Op^H * Op
+        Op1 = Op.H * Op
+        maxeig = torch.abs(_power_iteration(Op1, eigsiter, eigstol,
+                                            dtype=Op.dtype, device=device)[0])
         alpha = 1. / maxeig
-        del x, y, Op1, maxeig, maxeig_old
-    
-    #    # define threshold
+
+    # define threshold
     thresh = torch.tensor([eps * alpha * 0.5], device=device, dtype=dtype)
 
     if show:
@@ -122,34 +156,34 @@ def FISTA(Op, data, niter, eps=0.1, alpha=None, eigsiter=100000, eigstol=0,
         cost = np.zeros(niter+1)
         costdata = np.zeros(niter+1)
         costreg = np.zeros(niter+1)
-    
+
     # initialize model and cost function
     xinv = torch.zeros(Op.shape[1], dtype=dtype, device=device)
     zinv = xinv.clone()
     t = torch.tensor(1.).to(device)
-    
+
     # iterate
     for iiter in range(niter):
         xinvold = xinv.clone()
-        
+
         # compute residual
         resz = data - Op.matvec(zinv)
-        
+
         # compute gradient
         grad = alpha * Op.rmatvec(resz)
-        
+
         # update inverted model
         xinv_unthesh = zinv + grad
         xinv = _softthreshold(xinv_unthesh, thresh)
-        
+
         # update auxiliary coefficients
         told = t.clone()
         t = (1. + torch.sqrt(1. + 4. * t ** 2)) / 2.
         zinv = xinv + ((told - 1.) / t) * (xinv - xinvold)
-        
+
         # model update
         xupdate = torch.norm(xinv - xinvold)
-        
+
         if returninfo or show:
             costdata[iiter] = (0.5 * torch.norm(data - Op.matvec(xinv)) ** 2).item()
             costreg[iiter] = (torch.norm(xinv, p=1)).item()
@@ -273,11 +307,11 @@ def SplitBregman(Op, RegsL1, data, niter_outer=3, niter_inner=5, RegsL2=None,
 
     """
     dtype = data.dtype
-    
+
     def _shrinkage(x, thresh):
         xabs = torch.abs(x)
         return x / (xabs + 1e-10) * torch.max(xabs - thresh, torch.zeros_like(x))
-    
+
     if show:
         tstart = time()
         print('Split-Bregman optimization\n'
@@ -291,49 +325,50 @@ def SplitBregman(Op, RegsL1, data, niter_outer=3, niter_inner=5, RegsL2=None,
         print('---------------------------------------------------------\n')
         head1 = '   Itn          x[0]           r2norm          r12norm'
         print(head1)
-    
+
     # L1 regularizations
     nregsL1 = len(RegsL1)
     b = [torch.zeros(RegL1.shape[0], dtype=dtype).to(device) for RegL1 in RegsL1]
     d = b.copy()
-    
+
     # L2 regularizations
     nregsL2 = 0 if RegsL2 is None else len(RegsL2)
     if nregsL2 > 0:
         Regs = RegsL2 + RegsL1
         if dataregsL2 is None:
-            dataregsL2 = [torch.zeros(Op.shape[1], dtype=dtype).to(device)] * nregsL2
+            dataregsL2 = \
+                [torch.zeros(Op.shape[1], dtype=dtype).to(device)] * nregsL2
     else:
         Regs = RegsL1
         dataregsL2 = []
-    
+
     # Rescale dampings
     epsRs = [np.sqrt(epsRL2s[ireg] / 2) / np.sqrt(mu / 2) for ireg in range(nregsL2)] + \
             [np.sqrt(epsRL1s[ireg] / 2) / np.sqrt(mu / 2) for ireg in range(nregsL1)]
-    xinv = x0 if x0 is not None else torch.zeros_like(torch.zeros(Op.shape[1], dtype=dtype).to(device))
+    xinv = x0 if x0 is not None else \
+        torch.zeros_like(torch.zeros(Op.shape[1], dtype=dtype).to(device))
     xold = torch.from_numpy(np.inf * np.ones_like(np.zeros(Op.shape[1]))).to(device)
-    
+
     itn_out = 0
     while (xinv - xold).norm() > tol and itn_out < niter_outer:
         xold = xinv
         for _ in range(niter_inner):
             # Regularized problem
             dataregs = dataregsL2 + [d[ireg] - b[ireg] for ireg in range(nregsL1)]
-            
-            xinv = NormalEquationsInversion(
-                Op,
-                Regs,
-                data.clone(),
-                Weight=None,
-                dataregs=dataregs,
-                epsRs=epsRs,
-                x0=x0 if restart else xinv,
-                returninfo=False,
-                device=device,
-                **kwargs_cg
-            )
+
+            xinv = NormalEquationsInversion(Op,
+                                            Regs,
+                                            data.clone(),
+                                            Weight=None,
+                                            dataregs=dataregs,
+                                            epsRs=epsRs,
+                                            x0=x0 if restart else xinv,
+                                            returninfo=False,
+                                            device=device,
+                                            **kwargs_cg)
             # Shrinkage
-            d = [_shrinkage(RegsL1[ireg] * xinv + b[ireg], epsRL1s[ireg]) for ireg in range(nregsL1)]
+            d = [_shrinkage(RegsL1[ireg] * xinv + b[ireg], epsRL1s[ireg])
+                 for ireg in range(nregsL1)]
         # Bregman update
         b = [b[ireg] + tau * (RegsL1[ireg] * xinv - d[ireg]) for ireg in range(nregsL1)]
         itn_out += 1
@@ -354,5 +389,5 @@ def SplitBregman(Op, RegsL1, data, niter_outer=3, niter_inner=5, RegsL2=None,
         print('\nIterations = %d        Total time (s) = %.2f'
               % (itn_out, time() - tstart))
         print('---------------------------------------------------------\n')
-    
+
     return xinv, itn_out
