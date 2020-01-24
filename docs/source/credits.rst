@@ -3,4 +3,5 @@
 Contributors
 ============
 
-*  `Matteo Ravasi <mrava@equinor.com>`_, mrava87
+*  `Matteo Ravasi <https://github.com/mrava87>`_, mrava87
+*  `Francesco Picetti <https://github.com/fpicetti>`_, fpicetti
