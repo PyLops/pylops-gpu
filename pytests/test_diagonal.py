@@ -19,7 +19,7 @@ np.random.seed(0)
 torch.manual_seed(0)
 
 
-@pytest.mark.parametrize("par", [(par1), (par2)])
+@pytest.mark.parametrize("par", [(par1)])#, (par2)])
 def test_Diagonal_1dsignal(par):
     """Dot-test and inversion for Diagonal operator for 1d signal
     """
@@ -45,7 +45,7 @@ def test_Diagonal_1dsignal(par):
         assert_array_almost_equal(x.numpy(), xcg.cpu().numpy(), decimal=4)
 
 
-@pytest.mark.parametrize("par", [(par1), (par2)])
+@pytest.mark.parametrize("par", [(par1)])#, (par2)])
 def test_Diagonal_2dsignal(par):
     """Dot-test and inversion for Diagonal operator for 2d signal
     """
