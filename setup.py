@@ -30,7 +30,7 @@ setup(
         'Topic :: Scientific/Engineering :: Mathematics'
     ],
     author='mrava',
-    author_email='mrava@equinor.com',
+    author_email='matteoravasi@gmail.com',
     install_requires=['numpy >= 1.15.0',
                       'torch >= 1.2.0',
                       'pytorch_complex_tensor',
