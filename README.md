@@ -1,10 +1,10 @@
-![PyLops-gpu](https://github.com/equinor/pylops-gpu/blob/master/docs/source/_static/g-pylops_b.png)
+![PyLops-gpu](https://github.com/PyLops/pylops-gpu/blob/master/docs/source/_static/g-pylops_b.png)
 
 [![PyPI version](https://badge.fury.io/py/pylops-gpu.svg)](https://badge.fury.io/py/pylops-gpu)
 [![Build Status](https://travis-ci.com/PyLops/pylops-gpu.svg?branch=master)](https://travis-ci.com/PyLops/pylops-gpu)
 [![AzureDevOps Status](https://travis-ci.com/PyLops/pylops-gpu.svg?branch=master)](https://travis-ci.com/PyLops/pylops-gpu)
 [![Documentation Status](https://readthedocs.org/projects/pylops-gpu/badge/?version=latest)](https://pylops-gpu.readthedocs.io/en/latest/?badge=latest)
-[![OS-support](https://img.shields.io/badge/OS-linux,osx-850A8B.svg)](https://github.com/equinor/pylops-gpu)
+[![OS-support](https://img.shields.io/badge/OS-linux,osx-850A8B.svg)](https://github.com/PyLops/pylops-gpu)
 [![Slack Status](https://img.shields.io/badge/chat-slack-green.svg)](https://pylops.slack.com)
 
 :vertical_traffic_light: :vertical_traffic_light: This library is under early development.
@@ -89,7 +89,7 @@ Coming soon...
 You can also directly install from the master node
 
 ```
-pip install git+https://git@github.com/equinor/pylops-gpu.git@master
+pip install git+https://git@github.com/PyLops/pylops-gpu.git@master
 ```
 
 ## Contributing
@@ -121,7 +121,6 @@ you are required to rebuild the entire documentation before your changes will be
 PyLops-GPU was initially written and it is currently maintained by [Equinor](https://www.equinor.com).
 It is an extension of [PyLops](https://pylops.readthedocs.io/en/latest/) for large-scale optimization with
 *GPU-driven* linear operators on that can be tailored to our needs, and as contribution to the free software community.
-
 
 
 ## Contributors
