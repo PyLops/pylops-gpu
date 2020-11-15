@@ -2,10 +2,11 @@
 
 [![PyPI version](https://badge.fury.io/py/pylops-gpu.svg)](https://badge.fury.io/py/pylops-gpu)
 [![Build Status](https://travis-ci.com/PyLops/pylops-gpu.svg?branch=master)](https://travis-ci.com/PyLops/pylops-gpu)
-[![AzureDevOps Status](https://travis-ci.com/PyLops/pylops-gpu.svg?branch=master)](https://travis-ci.com/PyLops/pylops-gpu)
+[![AzureDevOps Status](https://dev.azure.com/matteoravasi/PyLops/_apis/build/status/PyLops.pylops-gpu?branchName=master)](https://dev.azure.com/matteoravasi/PyLops/_build/latest?definitionId=7&branchName=master)
 [![Documentation Status](https://readthedocs.org/projects/pylops-gpu/badge/?version=latest)](https://pylops-gpu.readthedocs.io/en/latest/?badge=latest)
 [![OS-support](https://img.shields.io/badge/OS-linux,osx-850A8B.svg)](https://github.com/PyLops/pylops-gpu)
 [![Slack Status](https://img.shields.io/badge/chat-slack-green.svg)](https://pylops.slack.com)
+
 
 :vertical_traffic_light: :vertical_traffic_light: This library is under early development.
 Expect things to constantly change until version v1.0.0. :vertical_traffic_light: :vertical_traffic_light:
