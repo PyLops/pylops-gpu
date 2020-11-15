@@ -24,7 +24,7 @@ np.random.seed(0)
 torch.manual_seed(0)
 
 
-@pytest.mark.parametrize("par", [(par1), (par2), (par1j), (par2j)])
+@pytest.mark.parametrize("par", [(par1), (par2)])#, (par1j), (par2j)])
 def test_MatrixMult(par):
     """Dot-test and inversion for MatrixMult operator
     """
@@ -53,7 +53,7 @@ def test_MatrixMult(par):
         assert_array_almost_equal(x.numpy(), xcg.numpy(), decimal=3)
 
 
-@pytest.mark.parametrize("par", [(par1), (par2), (par1j), (par2j)])
+@pytest.mark.parametrize("par", [(par1), (par2)])#, (par1j), (par2j)])
 def test_MatrixMult_repeated(par):
     """Dot-test and inversion for test_MatrixMult operator repeated
     along another dimension

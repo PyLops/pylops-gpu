@@ -26,11 +26,10 @@ np.random.seed(0)
 torch.manual_seed(0)
 
 
-@pytest.mark.parametrize("par", [(par1), (par2), (par1j), (par2j), (par3)])
+@pytest.mark.parametrize("par", [(par1), (par2), (par3)])#, (par1j), (par2j)])
 def test_Identity_inplace(par):
     """Dot-test, forward and adjoint for Identity operator
     """
-    print('complex', True if par['imag'] == 1j else False)
     Iop = Identity(par['ny'], par['nx'],
                    complex=True if par['imag'] == 1j else False,
                    dtype=torchtype_from_numpytype(par['dtype']),
@@ -65,7 +64,7 @@ def test_Identity_inplace(par):
                               decimal=4)
 
 
-@pytest.mark.parametrize("par", [(par1), (par2), (par1j), (par2j), (par3)])
+@pytest.mark.parametrize("par", [(par1), (par2), (par3)]) # (par1j), (par2j),
 def test_Identity_noinplace(par):
     """Dot-test, forward and adjoint for Identity operator (not in place)
     """
