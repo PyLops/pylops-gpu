@@ -22,7 +22,7 @@ print('PyLops-gpu working on %s...' % dev)
 plt.close('all')
 
 ###############################################################################
-# We will start by creating a zero signal of lenght :math:`nt` and we will
+# We will start by creating a zero signal of length :math:`nt` and we will
 # place a unitary spike at its center. We also create our filter to be
 # applied by means of :py:class:`pylops_gpu.signalprocessing.Convolve1D`
 # operator.

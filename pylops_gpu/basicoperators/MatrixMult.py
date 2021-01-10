@@ -4,7 +4,8 @@ import numpy as np
 from pytorch_complex_tensor import ComplexTensor
 from pylops_gpu.LinearOperator import LinearOperator
 from pylops_gpu.utils.complex import conj, reshape, flatten
-from pylops_gpu.utils.torch2numpy import numpytype_from_torchtype
+from pylops_gpu.utils.torch2numpy import numpytype_from_torchtype, \
+    torchtype_from_numpytype
 
 
 class MatrixMult(LinearOperator):
@@ -29,7 +30,7 @@ class MatrixMult(LinearOperator):
     tocpu : :obj:`tuple`, optional
         Move data and model from gpu to cpu after applying ``matvec`` and
         ``rmatvec``, respectively (only when ``device='gpu'``)
-    dtype : :obj:`torch.dtype`, optional
+    dtype : :obj:`torch.dtype` or :obj:`np.dtype`, optional
         Type of elements in input array.
 
     Attributes
@@ -49,10 +50,12 @@ class MatrixMult(LinearOperator):
     def __init__(self, A, dims=None, device='cpu',
                  togpu=(False, False), tocpu=(False, False),
                  dtype=torch.float32):
+        # convert A to torch tensor if provided as numpy array numpy
         if not isinstance(A, (torch.Tensor, ComplexTensor)):
-            self.complex = True if np.iscomplexobj(A) else False
+            dtype = numpytype_from_torchtype(dtype)
             self.A = \
                 torch.from_numpy(A.astype(numpytype_from_torchtype(dtype))).to(device)
+            self.complex = True if np.iscomplexobj(A) else False
         else:
             self.complex = True if isinstance(A, ComplexTensor) else False
             self.A = A
@@ -76,7 +79,7 @@ class MatrixMult(LinearOperator):
         self.device = device
         self.togpu = togpu
         self.tocpu = tocpu
-        self.dtype = dtype
+        self.dtype = torchtype_from_numpytype(dtype)
         self.explicit = True
         self.Op = None
 

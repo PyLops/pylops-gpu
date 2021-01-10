@@ -2,6 +2,7 @@ import torch
 
 from pylops_gpu import LinearOperator
 from pylops_gpu.signalprocessing import Convolve1D
+from pylops_gpu.utils.torch2numpy import torchtype_from_numpytype
 
 
 class SecondDerivative(LinearOperator):
@@ -28,7 +29,7 @@ class SecondDerivative(LinearOperator):
     tocpu : :obj:`tuple`, optional
         Move data and model from gpu to cpu after applying ``matvec`` and
         ``rmatvec``, respectively (only when ``device='gpu'``)
-    dtype : :obj:`torch.dtype`, optional
+    dtype : :obj:`torch.dtype` or :obj:`np.dtype`, optional
         Type of elements in input array.
 
     Attributes
@@ -52,6 +53,9 @@ class SecondDerivative(LinearOperator):
     def __init__(self, N, dims=None, dir=0, sampling=1., device='cpu',
                  togpu=(False, False), tocpu=(False, False),
                  dtype=torch.float32):
+        # convert dtype to torch.dtype
+        dtype = torchtype_from_numpytype(dtype)
+
         h = torch.torch.tensor([1., -2, 1.],
                                dtype=dtype).to(device) / sampling**2
         self.device = device
