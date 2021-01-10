@@ -6,9 +6,10 @@ from scipy.sparse import csc_matrix
 from pylops import MatrixMult, FirstDerivative
 from pylops.utils.signalprocessing import convmtx, nonstationary_convmtx
 from pylops.signalprocessing import Convolve1D
-#from pylops.avo.poststack import _PoststackLinearModelling
+from pylops.avo.poststack import _PoststackLinearModelling
 
 from pylops_gpu.utils import dottest as Dottest
+from pylops_gpu.utils.torch2numpy import torchtype_from_numpytype
 from pylops_gpu import MatrixMult as gMatrixMult
 from pylops_gpu import FirstDerivative as gFirstDerivative
 from pylops_gpu import SecondDerivative as gSecondDerivative
@@ -19,24 +20,16 @@ from pylops_gpu.optimization.leastsquares import RegularizedInversion
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.WARNING)
 
-
+"""
 def _PoststackLinearModelling(wav, nt0, spatdims=None, explicit=False,
                               sparse=False, _MatrixMult=MatrixMult,
                               _Convolve1D=Convolve1D,
                               _FirstDerivative=FirstDerivative,
                               args_MatrixMult={}, args_Convolve1D={},
                               args_FirstDerivative={}):
+    # define dtype to be used (ensure wav.dtype rules that of operator)
+    dtype = torchtype_from_numpytype(wav.dtype)
 
-
-    """Post-stack linearized seismic modelling operator.
-
-    Used to be able to provide operators from different libraries to
-    PoststackLinearModelling. It operates in the same way as public method
-    (PoststackLinearModelling) but has additional input parameters allowing
-    passing a different operator and additional arguments to be passed to such
-    operator.
-
-    """
     if len(wav.shape) == 2 and wav.shape[0] != nt0:
         raise ValueError('Provide 1d wavelet or 2d wavelet composed of nt0 '
                          'wavelets')
@@ -67,23 +60,27 @@ def _PoststackLinearModelling(wav, nt0, spatdims=None, explicit=False,
         M = np.dot(C, D)
         if sparse:
             M = csc_matrix(M)
-        Pop = _MatrixMult(M, dims=spatdims, **args_MatrixMult)
+        Pop = _MatrixMult(M, dims=spatdims, dtype=dtype, **args_MatrixMult)
     else:
         # Create wavelet operator
         if len(wav.shape) == 1:
             Cop = _Convolve1D(np.prod(np.array(dims)), h=wav,
                               offset=len(wav) // 2, dir=0, dims=dims,
-                              **args_Convolve1D)
+                              dtype=dtype, **args_Convolve1D)
         else:
             Cop = _MatrixMult(nonstationary_convmtx(wav, nt0,
                                                     hc=wav.shape[1] // 2,
                                                     pad=(nt0, nt0)),
-                              dims=spatdims, **args_MatrixMult)
+                              dims=spatdims, dtype=dtype,
+                              **args_MatrixMult)
         # Create derivative operator
         Dop = _FirstDerivative(np.prod(np.array(dims)), dims=dims,
-                               dir=0, sampling=1., **args_FirstDerivative)
+                               dir=0, sampling=1., dtype=dtype,
+                               **args_FirstDerivative)
+
         Pop = Cop * Dop
     return Pop
+"""
 
 
 def PoststackLinearModelling(wav, nt0, spatdims=None, explicit=False,
@@ -129,8 +126,9 @@ def PoststackLinearModelling(wav, nt0, spatdims=None, explicit=False,
     implementation details.
 
     """
-    if not isinstance(wav, torch.Tensor) and not explicit:
-        wav = torch.from_numpy(wav).to(device)
+    # ensure wav is always numpy, it will be converted later back to torch
+    if isinstance(wav, torch.Tensor):
+        wav = wav.cpu().numpy()
     return _PoststackLinearModelling(wav, nt0, spatdims=spatdims,
                                      explicit=explicit, sparse=False,
                                      _MatrixMult=gMatrixMult,
