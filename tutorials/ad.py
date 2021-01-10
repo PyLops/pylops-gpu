@@ -19,6 +19,7 @@ modelling operators.
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
+from torch.autograd import gradcheck
 
 import pylops_gpu
 from pylops_gpu.utils.backend import device
@@ -61,15 +62,15 @@ torch.manual_seed(10)
 # :math:`\mathbf{v}` that we have provided to PyTorch ``backward``.
 
 nx, ny = 10, 6
-x0 = torch.arange(nx, dtype=torch.float32, requires_grad=True)
+x0 = torch.arange(nx, dtype=torch.double, requires_grad=True)
 
 # Forward
-A = torch.normal(0., 1., (ny, nx))
+A = torch.normal(0., 1., (ny, nx), dtype=torch.double)
 Aop = pylops_gpu.TorchOperator(pylops_gpu.MatrixMult(A))
 y = Aop.apply(torch.sin(x0))
 
 # AD
-v = torch.ones(ny)
+v = torch.ones(ny, dtype=torch.double)
 y.backward(v, retain_graph=True)
 adgrad = x0.grad
 
@@ -80,6 +81,17 @@ anagrad = torch.matmul(J.T, v)
 print('Input: ', x0)
 print('AD gradient: ', adgrad)
 print('Analytical gradient: ', anagrad)
+
+
+###############################################################################
+# Similarly we can use the :func:`torch.autograd.gradcheck` directly from
+# PyTorch. Note that doubles must be used for this to succeed with very small
+# `eps` and `atol`
+input = (torch.arange(nx, dtype=torch.double, requires_grad=True),
+         Aop.matvec, Aop.rmatvec, Aop.pylops, Aop.device)
+test = gradcheck(Aop.Top, input, eps=1e-6, atol=1e-4)
+print(test)
+
 
 ###############################################################################
 # Note that while matrix-vector multiplication could have been performed using
