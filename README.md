@@ -83,7 +83,22 @@ This repository is organized as follows:
 You need **Python 3.5 or greater**.
 
 #### From PyPi
-Coming soon...
+
+If you want to use PyLops-gpu within your codes,
+install it in your Python-gpu environment by typing the following command in your terminal:
+
+```
+pip install pylops-gpu
+```
+
+Open a python terminal and type:
+
+```
+import pylops_gpu
+```
+
+If you do not see any error, you should be good to go, enjoy!
+
 
 #### From Github
 

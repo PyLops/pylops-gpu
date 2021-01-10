@@ -3,6 +3,7 @@ import numpy as np
 
 from torch.nn.functional import pad
 from pylops_gpu import LinearOperator
+from pylops_gpu.utils.torch2numpy import torchtype_from_numpytype
 
 
 class Convolve1D(LinearOperator):
@@ -16,7 +17,7 @@ class Convolve1D(LinearOperator):
     ----------
     N : :obj:`int`
         Number of samples in model.
-    h : :obj:`torch.Tensor`
+    h : :obj:`torch.Tensor` or :obj:`numpy.ndarray`
         1d compact filter to be convolved to input signal
     offset : :obj:`int`
         Index of the center of the compact filter
@@ -55,6 +56,13 @@ class Convolve1D(LinearOperator):
     def __init__(self, N, h, offset=0, dims=None, dir=0, zero_edges=False,
                  device='cpu', togpu=(False, False), tocpu=(False, False),
                  dtype=torch.float32):
+        # convert dtype to torch.dtype
+        if not isinstance(dtype, torch.dtype):
+            dtype = torchtype_from_numpytype(dtype)
+
+        # convert h to torch if numpy
+        if not isinstance(h, torch.Tensor):
+            h = torch.from_numpy(h).to(device)
         self.nh = h.size()[0]
         self.h = h.reshape(1, 1, self.nh)
         self.offset = 2*(self.nh // 2 - int(offset))

@@ -1,5 +1,13 @@
 import torch
 
+from torch.utils.dlpack import from_dlpack, to_dlpack
+from pylops.utils import deps
+
+if deps.cupy_enabled:
+    import cupy as cp
+else:
+    cp = None
+
 
 class _TorchOperator(torch.autograd.Function):
     """Wrapper class for PyLops operators into Torch functions
@@ -16,20 +24,47 @@ class _TorchOperator(torch.autograd.Function):
         ctx.pylops = pylops
         ctx.device = device
 
+        # prepare input
         if ctx.pylops:
-            x = x.cpu().detach().numpy()
+            if ctx.device == 'cpu':
+                # bring x to cpu and numpy
+                x = x.cpu().detach().numpy()
+            else:
+                # pass x to cupy using DLPack
+                x = cp.fromDlpack(to_dlpack(x))
+
+        # apply forward operator
         y = ctx.forw(x)
+
+        # prepare output
         if ctx.pylops:
-            y = torch.from_numpy(y).to(ctx.device)
+            if ctx.device == 'cpu':
+                # move y to torch and device
+                y = torch.from_numpy(y).to(ctx.device)
+            else:
+                # move y to torch and device
+                y = from_dlpack(y.toDlpack())
         return y
 
     @staticmethod
     def backward(ctx, y):
+        # prepare input
         if ctx.pylops:
-            y = y.cpu().detach().numpy()
+            if ctx.device == 'cpu':
+                y = y.cpu().detach().numpy()
+            else:
+                # pass x to cupy using DLPack
+                y = cp.fromDlpack(to_dlpack(y))
+
+        # apply adjoint operator
         x = ctx.adj(y)
+
+        # prepare output
         if ctx.pylops:
-            x = torch.from_numpy(x).to(ctx.device)
+            if ctx.device == 'cpu':
+                x = torch.from_numpy(x).to(ctx.device)
+            else:
+                x = from_dlpack(x.toDlpack())
         return  x, None, None, None, None
 
 
@@ -75,6 +110,7 @@ class TorchOperator():
         else:
             self.matvec = lambda x: Op.matmat(x, kfirst=True)
             self.rmatvec = lambda x: Op.rmatmat(x, kfirst=True)
+        self.Top = _TorchOperator.apply
 
     def apply(self, x):
         """Apply forward pass to input vector
@@ -90,5 +126,5 @@ class TorchOperator():
             Output array resulting from the application of the operator to ``x``.
 
         """
-        return _TorchOperator.apply(x, self.matvec, self.rmatvec,
-                                    self.pylops, self.device)
+        return self.Top(x, self.matvec, self.rmatvec,
+                        self.pylops, self.device)

@@ -2,6 +2,7 @@ import torch
 import numpy as np
 
 from pylops_gpu.LinearOperator import LinearOperator
+from pylops_gpu.utils.torch2numpy import torchtype_from_numpytype
 
 
 class Restriction(LinearOperator):
@@ -78,7 +79,7 @@ class Restriction(LinearOperator):
         self.device = device
         self.togpu = togpu
         self.tocpu = tocpu
-        self.dtype = dtype
+        self.dtype = torchtype_from_numpytype(dtype)
         self.explicit = True
         self.Op = None
 

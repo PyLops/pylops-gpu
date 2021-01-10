@@ -2,6 +2,25 @@ import torch
 import numpy as np
 
 
+
+def numpytype_from_strtype(strtype):
+    """Convert str into equivalent numpy type
+
+    Parameters
+    ----------
+    strtype : :obj:`str`
+        String type
+
+    Returns
+    -------
+    numpytype : :obj:`numpy.dtype`
+        Numpy equivalent type
+
+    """
+    numpytype = np.dtype(strtype)
+    return numpytype
+
+
 def numpytype_from_torchtype(torchtype):
     """Convert torch type into equivalent numpy type
 
@@ -12,11 +31,15 @@ def numpytype_from_torchtype(torchtype):
 
     Returns
     -------
-    numpytype : :obj:`torch.dtype`
+    numpytype : :obj:`numpy.dtype`
         Numpy equivalent type
 
     """
-    numpytype = torch.scalar_tensor(1, dtype=torchtype).numpy().dtype
+    if isinstance(torchtype, torch.dtype):
+        numpytype = torch.scalar_tensor(1, dtype=torchtype).numpy().dtype
+    else:
+        # in case it is already a numpy dtype
+        numpytype = torchtype
     return numpytype
 
 
@@ -25,7 +48,7 @@ def torchtype_from_numpytype(numpytype):
 
     Parameters
     ----------
-    numpytype : :obj:`torch.dtype`
+    numpytype : :obj:`numpy.dtype`
         Numpy type
 
     Returns
@@ -40,5 +63,10 @@ def torchtype_from_numpytype(numpytype):
     returned.
 
     """
-    torchtype = torch.from_numpy(np.real(np.ones(1, dtype=numpytype))).dtype
+    if isinstance(numpytype, torch.dtype):
+        # in case it is already a torch dtype
+        torchtype = numpytype
+    else:
+        torchtype = \
+            torch.from_numpy(np.real(np.ones(1, dtype=numpytype_from_strtype(numpytype)))).dtype
     return torchtype

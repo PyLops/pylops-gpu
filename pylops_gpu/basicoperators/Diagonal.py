@@ -5,6 +5,7 @@ from pytorch_complex_tensor import ComplexTensor
 from pylops_gpu import LinearOperator
 from pylops_gpu.utils.complex import conj, flatten, reshape, \
     complextorch_fromnumpy
+from pylops_gpu.utils.torch2numpy import torchtype_from_numpytype
 
 
 class Diagonal(LinearOperator):
@@ -78,7 +79,7 @@ class Diagonal(LinearOperator):
         self.device = device
         self.togpu = togpu
         self.tocpu = tocpu
-        self.dtype = dtype
+        self.dtype = torchtype_from_numpytype(dtype)
         self.explicit = False
         self.Op = None
 
