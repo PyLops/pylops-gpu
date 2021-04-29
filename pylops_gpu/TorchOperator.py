@@ -40,7 +40,7 @@ class _TorchOperator(torch.autograd.Function):
         if ctx.pylops:
             if ctx.device == 'cpu':
                 # move y to torch and device
-                y = torch.from_numpy(y).to(ctx.device)
+                y = torch.from_numpy(y)
             else:
                 # move y to torch and device
                 y = from_dlpack(y.toDlpack())
@@ -62,10 +62,10 @@ class _TorchOperator(torch.autograd.Function):
         # prepare output
         if ctx.pylops:
             if ctx.device == 'cpu':
-                x = torch.from_numpy(x).to(ctx.device)
+                x = torch.from_numpy(x)
             else:
                 x = from_dlpack(x.toDlpack())
-        return  x, None, None, None, None
+        return x, None, None, None, None
 
 
 class TorchOperator():
