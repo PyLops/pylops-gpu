@@ -3,7 +3,7 @@
 Installation
 ============
 
-You will need **Python 3.5 or greater** to get started.
+You will need **Python 3.6 or greater** to get started.
 
 
 Dependencies
@@ -13,8 +13,8 @@ Our mandatory dependencies are limited to:
 
 * `numpy <http://www.numpy.org>`_
 * `scipy <http://www.scipy.org/scipylib/index.html>`_
-* `numba <https://numba.pydata.org>`_
 * `pytorch <https://www.pytorch.org>`_
+* `pytorch_complex_tensor <https://github.com/williamFalcon/pytorch-complex-tensor>`_
 * `pylops <https://pylops.readthedocs.io/en/latest/#>`_
 
 We advise using the `Anaconda Python distribution <https://www.anaconda.com/download>`_
@@ -24,16 +24,18 @@ to ensure that these dependencies are installed via the ``Conda`` package manage
 Step-by-step installation for users
 -----------------------------------
 
-Python environment
-~~~~~~~~~~~~~~~~~~
-
-Stable releases on PyPI and Conda coming soon...
-
-To install the latest source from github:
+Activate your Python environment, and simply type the following command in your terminal
+to install the PyPi distribution:
 
 .. code-block:: bash
 
-   >> pip install https://git@github.com/equinor/pylops-gpu.git@master
+   >> pip install pylops-gpu
+
+Alternatively, to access the latest source from github:
+
+.. code-block:: bash
+
+   >> pip install https://git@github.com/PyLops/pylops-gpu.git@master
 
 or just clone the repository
 
@@ -47,6 +49,10 @@ main github repo page) and install PyLops from terminal using the command:
 .. code-block:: bash
 
    >> make install
+
+**Note**: you may see an error if `pytorch-complex-tensor` has not been
+previously installed. In that case first run
+`pip install pytorch-complex-tensor` and then install pylops-gpu
 
 
 Step-by-step installation for developers

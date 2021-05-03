@@ -99,6 +99,9 @@ import pylops_gpu
 
 If you do not see any error, you should be good to go, enjoy!
 
+**Note**: you may see an error if `pytorch-complex-tensor` has not been
+previously installed. In that case first run 
+`pip install pytorch-complex-tensor` and then install pylops-gpu
 
 #### From Github
 
