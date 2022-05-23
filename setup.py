@@ -34,7 +34,7 @@ setup(
     install_requires=['numpy >= 1.15.0',
                       'torch >= 1.2.0',
                       'pytorch_complex_tensor',
-                      'pylops'],
+                      'pylops <= 1.13.0'],
     packages=find_packages(exclude=['pytests']),
     use_scm_version=dict(root = '.',
                          relative_to = __file__,
