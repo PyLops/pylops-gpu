@@ -8,8 +8,8 @@
 [![Slack Status](https://img.shields.io/badge/chat-slack-green.svg)](https://pylops.slack.com)
 
 
-:vertical_traffic_light: :vertical_traffic_light: This library is under early development.
-Expect things to constantly change until version v1.0.0. :vertical_traffic_light: :vertical_traffic_light:
+:vertical_traffic_light: :vertical_traffic_light: This library is unmantained!
+If interested in running PyLops on GPUs please use the cupy backend from the PyLops main library :vertical_traffic_light: :vertical_traffic_light:
 
 ## Objective
 This library is an extension of [PyLops](https://pylops.readthedocs.io/en/latest/)

@@ -9,7 +9,7 @@ dependencies:
   - scipy>=1.4.0
   - pytorch>=1.2.0
   - torchvision
-  - pylops
+  - pylops<=1.13.0
   - pytest
   - Sphinx
   - numpydoc
